@@ -1,0 +1,203 @@
+﻿@model MeetingMinutesGP.Models.MeetingModel
+@{
+    ViewBag.Title = "startstat";
+
+}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<style>
+        .header {
+            background-color: #0e2737;
+            padding: 5px;
+            height: auto;
+            text-align: center;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-bottom: 6px solid #18bcaa;
+        }
+
+        #mettTitle {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        [type="date"] {
+            background: #fff url(https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/calendar_2.png) 97% 50% no-repeat;
+        }
+
+            [type="date"]::-webkit-inner-spin-button {
+                display: none;
+            }
+
+            [type="date"]::-webkit-calendar-picker-indicator {
+                opacity: 0;
+            }
+
+        label {
+            display: block;
+        }
+
+        input {
+            border: 1px solid #c4c4c4;
+            border-radius: 5px;
+            background-color: #fff;
+            padding: 3px 5px;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+            width: 190px;
+        }
+        /*body {
+      margin: 0;
+      padding: 0;
+      background-color: #004882;
+    }*/
+
+        .box {
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 5px;
+        }
+
+            .box select {
+                background-color: #0563af;
+                color: white;
+                padding: 12px;
+                width: 250px;
+                border: none;
+                font-size: 20px;
+                box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+                -webkit-appearance: button;
+                appearance: button;
+                border-radius: 15px;
+                outline: none;
+            }
+
+            .box::before {
+                content: "\f13a";
+                font-family: FontAwesome;
+                position: absolute;
+                border-radius: 15px;
+                top: 0;
+                right: 0;
+                width: 20%;
+                height: 100%;
+                text-align: center;
+                font-size: 28px;
+                line-height: 45px;
+                color: rgba(255, 255, 255, 0.5);
+                background-color: rgba(255, 255, 255, 0.1);
+                pointer-events: none;
+            }
+
+            .box:hover::before {
+                color: rgba(255, 255, 255, 0.6);
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .box select option {
+                padding: 40px;
+                background-color: white;
+                color: #0e2737;
+            }
+
+        .StatData {
+            border: 1px #eee solid;
+            padding: 0;
+            border-radius: 7px;
+            width: 50%;
+        }
+
+        .input {
+            width: 280px;
+        }
+
+        footer {
+            margin-top: 10px;
+        }
+</style>
+<script>
+  $( function() {
+    var availableTags = [
+      "Medical",
+      "Media",
+      "Food",
+      "Eat",
+      "Financial",
+      "Manager",
+      "Doctors",
+      "Car",
+      "Automobile",
+      "Books",
+      "Photos",
+      "Export",
+      "Coding",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme"
+    ];
+    $( "#tags" ).autocomplete({
+      source: availableTags
+    });
+  });
+
+</script>
+<br>
+<div class="col-md-3"></div>
+<div class="StatData col-md-6">
+    <div align="center">
+        <label>Start Date</label>
+        <input type="date" id="s1" style="width:280px !important ;height: 40px;" />
+    </div>
+    <br>
+    <div align="center">
+        <label for="date2" class="">End Date</label>
+        <input type="date" id="s2" style="width:280px !important ;height: 40px;" />
+    </div>
+    <br>
+    <div align="center">
+        <label for="tags">Topics </label>
+        <input id="tags" style="width:280px !important ;height: 40px;">
+    </div>
+    <br>
+    <div align="center" class="box">
+        @Html.DropDownList("choose", new SelectListItem[] { new SelectListItem() { Text = "Attendence", Value = "0" }, new SelectListItem() { Text = "Topics", Value = "7" }, new SelectListItem() { Text = "Tasks", Value = "1" }, new SelectListItem() { Text = "Open Tasks", Value = "2" } }, new { @onchange = "CallChangefunc(this.value,)" })
+        <br>
+    </div>
+</div>
+<div class="col-md-3"></div>
+<script>
+        function CallChangefunc(val) {
+            if (val == 1) {
+
+                window.location.href = '@Url.Action("tasks", "stat")/' + document.getElementById("s1").value + '/' + document.getElementById("s2").value;
+            }
+            else if (val == 0) {
+                window.location.href = '@Url.Action("meetingatt", "stat")/' + document.getElementById("s1").value + '/' + document.getElementById("s2").value;
+            } else if (val == 2) {
+                window.location.href = '@Url.Action("opentasks", "stat")/' + document.getElementById("s1").value + '/' + document.getElementById("s2").value;
+            } else if (val == 7) {
+                window.location.href = '@Url.Action("topics_stat", "stat")/' + document.getElementById("s1").value + '/' + document.getElementById("s2").value + '/' + document.getElementById("tags").value;
+
+            }
+
+        }
+        window.onload = function () {
+            document.getElementById("s1").value = "";
+            document.getElementById("s2").value = "";
+        };
+
+</script>
+
+
+

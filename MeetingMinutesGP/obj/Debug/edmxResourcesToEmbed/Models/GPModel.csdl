@@ -1,0 +1,484 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="GPModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Agendum">
+    <Key>
+      <PropertyRef Name="AgendaID" />
+    </Key>
+    <Property Name="AgendaID" Type="Int32" Nullable="false" />
+    <Property Name="meetingID" Type="Int32" Nullable="false" />
+    <Property Name="Title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Meeting" Relationship="GPModel.FK_Agenda_Meeting" FromRole="Agendum" ToRole="Meeting" />
+    <NavigationProperty Name="Topics" Relationship="GPModel.FK_Topic_Agenda1" FromRole="Agendum" ToRole="Topic" />
+  </EntityType>
+  <EntityType Name="Location">
+    <Key>
+      <PropertyRef Name="LocationID" />
+    </Key>
+    <Property Name="LocationID" Type="Int32" Nullable="false" />
+    <Property Name="Floor" Type="Int32" />
+    <Property Name="RoomNumber" Type="Int32" />
+    <Property Name="Address" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Company" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Meetings" Relationship="GPModel.FK_Meeting_Location" FromRole="Location" ToRole="Meeting" />
+  </EntityType>
+  <EntityType Name="Post">
+    <Key>
+      <PropertyRef Name="PostID" />
+    </Key>
+    <Property Name="PostID" Type="Int32" Nullable="false" />
+    <Property Name="PostContent" Type="String" MaxLength="300" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PostPrivacy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="userID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="User" Relationship="Self.FK_Post_User1" FromRole="Post" ToRole="User" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="UserID" />
+    </Key>
+    <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Gender" Type="Boolean" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Birthdate" Type="DateTime" Precision="3" />
+    <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Company" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Position" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ActivationCode" Type="Guid" Nullable="false" />
+    <Property Name="IsEmailVerified" Type="Boolean" Nullable="false" />
+    <Property Name="ResetPasswordCode" Type="Guid" />
+    <NavigationProperty Name="Posts" Relationship="Self.FK_Post_User1" FromRole="User" ToRole="Post" />
+    <NavigationProperty Name="UserMeetings" Relationship="Self.FK_UserMeeting_User" FromRole="User" ToRole="UserMeeting" />
+    <NavigationProperty Name="User1" Relationship="Self.Follow" FromRole="User" ToRole="User1" />
+    <NavigationProperty Name="Users" Relationship="Self.Follow" FromRole="User1" ToRole="User" />
+    <NavigationProperty Name="PersonalTasks" Relationship="GPModel.FK_PersonalTask_User" FromRole="User" ToRole="PersonalTask" />
+  </EntityType>
+  <EntityType Name="UserMeeting">
+    <Key>
+      <PropertyRef Name="userID" />
+      <PropertyRef Name="meetingID" />
+    </Key>
+    <Property Name="userID" Type="Int32" Nullable="false" />
+    <Property Name="meetingID" Type="Int32" Nullable="false" />
+    <Property Name="Attended" Type="Boolean" Nullable="false" />
+    <Property Name="AssignedTask" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+    <Property Name="TaskStartDate" Type="DateTime" Precision="3" />
+    <Property Name="TaskEndDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="User" Relationship="Self.FK_UserMeeting_User" FromRole="UserMeeting" ToRole="User" />
+    <Property Name="Coordinator" Type="Boolean" />
+    <Property Name="TaskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="TaskStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="CalendarTaskID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskIntiatorEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Notifications" Relationship="GPModel.FK_Notification_UserMeeting1" FromRole="UserMeeting" ToRole="Notification" />
+    <NavigationProperty Name="Meeting" Relationship="GPModel.FK_UserMeeting_Meeting" FromRole="UserMeeting" ToRole="Meeting" />
+  </EntityType>
+  <Association Name="FK_Post_User1">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="Post" Type="Self.Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="userID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UserMeeting_User">
+    <End Role="User" Type="Self.User" Multiplicity="1" />
+    <End Role="UserMeeting" Type="Self.UserMeeting" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="UserMeeting">
+        <PropertyRef Name="userID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Follow">
+    <End Role="User" Type="Self.User" Multiplicity="*" />
+    <End Role="User1" Type="Self.User" Multiplicity="*" />
+  </Association>
+  <EntityContainer Name="GPEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Agenda" EntityType="Self.Agendum" />
+    <EntitySet Name="Locations" EntityType="Self.Location" />
+    <EntitySet Name="Posts" EntityType="Self.Post" />
+    <EntitySet Name="Users" EntityType="Self.User" />
+    <EntitySet Name="UserMeetings" EntityType="Self.UserMeeting" />
+    <AssociationSet Name="FK_Post_User1" Association="Self.FK_Post_User1">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UserMeeting_User" Association="Self.FK_UserMeeting_User">
+      <End Role="User" EntitySet="Users" />
+      <End Role="UserMeeting" EntitySet="UserMeetings" />
+    </AssociationSet>
+    <AssociationSet Name="Follow" Association="Self.Follow">
+      <End Role="User" EntitySet="Users" />
+      <End Role="User1" EntitySet="Users" />
+    </AssociationSet>
+    <FunctionImport Name="sp_alterdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(GPModel.sp_helpdiagramdefinition_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(GPModel.sp_helpdiagrams_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams" />
+    <FunctionImport Name="GetFllowTableData" ReturnType="Collection(GPModel.FolloweTable_Result)" />
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_b4f6fdd1_5440_4054_b5d7_e6a909fae4b8" ReturnType="Collection(Guid)" />
+    <EntitySet Name="PersonalTasks" EntityType="GPModel.PersonalTask" />
+    <AssociationSet Name="FK_PersonalTask_User" Association="GPModel.FK_PersonalTask_User">
+      <End Role="User" EntitySet="Users" />
+      <End Role="PersonalTask" EntitySet="PersonalTasks" />
+    </AssociationSet>
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_43da4ee6_cd40_475e_87c9_97aaf275b2fc" ReturnType="Collection(Guid)" />
+    <EntitySet Name="Options" EntityType="GPModel.Option" />
+    <EntitySet Name="Votes" EntityType="GPModel.Vote" />
+    <AssociationSet Name="FK_Options_Vote1" Association="GPModel.FK_Options_Vote1">
+      <End Role="Vote" EntitySet="Votes" />
+      <End Role="Option" EntitySet="Options" />
+    </AssociationSet>
+    <EntitySet Name="sysdiagrams" EntityType="GPModel.sysdiagram" />
+    <FunctionImport Name="sp_alterdiagram1">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram1">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram1">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition1" ReturnType="Collection(GPModel.sp_helpdiagramdefinition1_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams1" ReturnType="Collection(GPModel.sp_helpdiagrams1_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram1">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams1" />
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_91f10b5a_da17_4cce_aa59_94a706f8bcbd" />
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_a8de4745_250e_4ee0_9a33_9a094f362445" ReturnType="Collection(Guid)" />
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_ad919e6d_0225_4f24_b61e_4546616c633e" />
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_5a5042b0_7bff_4496_b60a_0823c0784423" ReturnType="Collection(Guid)" />
+    <EntitySet Name="Notifications" EntityType="GPModel.Notification" />
+    <AssociationSet Name="FK_Notification_UserMeeting1" Association="GPModel.FK_Notification_UserMeeting1">
+      <End Role="UserMeeting" EntitySet="UserMeetings" />
+      <End Role="Notification" EntitySet="Notifications" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Notification_Vote" Association="GPModel.FK_Notification_Vote">
+      <End Role="Vote" EntitySet="Votes" />
+      <End Role="Notification" EntitySet="Notifications" />
+    </AssociationSet>
+    <FunctionImport Name="SqlQueryNotificationStoredProcedure_2327a0d6_7696_404e_a413_b98a3e8471e9" ReturnType="Collection(Guid)" />
+    <EntitySet Name="Meetings" EntityType="GPModel.Meeting" />
+    <EntitySet Name="Topics" EntityType="GPModel.Topic" />
+    <AssociationSet Name="FK_Agenda_Meeting" Association="GPModel.FK_Agenda_Meeting">
+      <End Role="Meeting" EntitySet="Meetings" />
+      <End Role="Agendum" EntitySet="Agenda" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Topic_Agenda1" Association="GPModel.FK_Topic_Agenda1">
+      <End Role="Agendum" EntitySet="Agenda" />
+      <End Role="Topic" EntitySet="Topics" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Meeting_Location" Association="GPModel.FK_Meeting_Location">
+      <End Role="Location" EntitySet="Locations" />
+      <End Role="Meeting" EntitySet="Meetings" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UserMeeting_Meeting" Association="GPModel.FK_UserMeeting_Meeting">
+      <End Role="Meeting" EntitySet="Meetings" />
+      <End Role="UserMeeting" EntitySet="UserMeetings" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Topic_Topic" Association="GPModel.FK_Topic_Topic">
+      <End Role="Topic" EntitySet="Topics" />
+      <End Role="Topic1" EntitySet="Topics" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Vote_Topic" Association="GPModel.FK_Vote_Topic">
+      <End Role="Topic" EntitySet="Topics" />
+      <End Role="Vote" EntitySet="Votes" />
+    </AssociationSet>
+  </EntityContainer>
+  <ComplexType Name="sp_helpdiagramdefinition_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="FolloweTable_Result">
+    <Property Type="Int32" Name="FollowerID" Nullable="false" />
+    <Property Type="Int32" Name="FollowedID" Nullable="false" />
+  </ComplexType>
+  <EntityType Name="PersonalTask">
+    <Key>
+      <PropertyRef Name="TaskID" />
+    </Key>
+    <Property Name="TaskID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskIntiatorEmail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="TaskOwnerEmail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="TaskName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="TaskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="TaskStartDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="TaskEndDate" Type="DateTime" Precision="3" />
+    <Property Name="TaskStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="userId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="User" Relationship="GPModel.FK_PersonalTask_User" FromRole="PersonalTask" ToRole="User" />
+  </EntityType>
+  <Association Name="FK_PersonalTask_User">
+    <End Type="GPModel.User" Role="User" Multiplicity="1" />
+    <End Type="GPModel.PersonalTask" Role="PersonalTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="PersonalTask">
+        <PropertyRef Name="userId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="Option">
+    <Key>
+      <PropertyRef Name="OptionID" />
+    </Key>
+    <Property Name="OptionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OptionDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="voteID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Vote" Relationship="GPModel.FK_Options_Vote1" FromRole="Option" ToRole="Vote" />
+    <Property Name="OptionCount" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Vote">
+    <Key>
+      <PropertyRef Name="VoteID" />
+    </Key>
+    <Property Name="VoteID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="VoteName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="VoteResult" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="topicID" Type="Int32" Nullable="false" />
+    <Property Name="VoteDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Options" Relationship="GPModel.FK_Options_Vote1" FromRole="Vote" ToRole="Option" />
+    <NavigationProperty Name="Notifications" Relationship="GPModel.FK_Notification_Vote" FromRole="Vote" ToRole="Notification" />
+    <NavigationProperty Name="Topic" Relationship="GPModel.FK_Vote_Topic" FromRole="Vote" ToRole="Topic" />
+  </EntityType>
+  <Association Name="FK_Options_Vote1">
+    <End Type="GPModel.Vote" Role="Vote" Multiplicity="1" />
+    <End Type="GPModel.Option" Role="Option" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Vote">
+        <PropertyRef Name="VoteID" />
+      </Principal>
+      <Dependent Role="Option">
+        <PropertyRef Name="voteID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <ComplexType Name="sp_helpdiagramdefinition1_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams1_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+  <EntityType Name="Notification">
+    <Key>
+      <PropertyRef Name="NotificaionId" />
+    </Key>
+    <Property Name="NotificaionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="IsRead" Type="Boolean" Nullable="false" />
+    <Property Name="Message" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="DetailsURL" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UserId" Type="Int32" Nullable="false" />
+    <Property Name="MeetingId" Type="Int32" Nullable="false" />
+    <Property Name="VoteID" Type="Int32" />
+    <NavigationProperty Name="UserMeeting" Relationship="GPModel.FK_Notification_UserMeeting1" FromRole="Notification" ToRole="UserMeeting" />
+    <NavigationProperty Name="Vote" Relationship="GPModel.FK_Notification_Vote" FromRole="Notification" ToRole="Vote" />
+  </EntityType>
+  <Association Name="FK_Notification_UserMeeting1">
+    <End Type="GPModel.UserMeeting" Role="UserMeeting" Multiplicity="1" />
+    <End Type="GPModel.Notification" Role="Notification" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserMeeting">
+        <PropertyRef Name="userID" />
+        <PropertyRef Name="meetingID" />
+      </Principal>
+      <Dependent Role="Notification">
+        <PropertyRef Name="UserId" />
+        <PropertyRef Name="MeetingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Notification_Vote">
+    <End Type="GPModel.Vote" Role="Vote" Multiplicity="0..1" />
+    <End Type="GPModel.Notification" Role="Notification" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Vote">
+        <PropertyRef Name="VoteID" />
+      </Principal>
+      <Dependent Role="Notification">
+        <PropertyRef Name="VoteID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="Meeting">
+    <Key>
+      <PropertyRef Name="MeetingID" />
+    </Key>
+    <Property Name="MeetingID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MeetingDuration" Type="Double" />
+    <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="locationID" Type="Int32" />
+    <Property Name="ReferenceLinkName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ReferenceLink" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Agenda" Relationship="GPModel.FK_Agenda_Meeting" FromRole="Meeting" ToRole="Agendum" />
+    <NavigationProperty Name="Location" Relationship="GPModel.FK_Meeting_Location" FromRole="Meeting" ToRole="Location" />
+    <NavigationProperty Name="UserMeetings" Relationship="GPModel.FK_UserMeeting_Meeting" FromRole="Meeting" ToRole="UserMeeting" />
+    <Property Name="ImageLocation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="Topic">
+    <Key>
+      <PropertyRef Name="TopicID" />
+    </Key>
+    <Property Name="TopicID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TopicName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="TopicDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="TopicTime" Type="Int32" />
+    <Property Name="TopicPriority" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="agendaId" Type="Int32" Nullable="false" />
+    <Property Name="ListOfItems" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="FileLocation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="subTopicId" Type="Int32" />
+    <NavigationProperty Name="Agendum" Relationship="GPModel.FK_Topic_Agenda1" FromRole="Topic" ToRole="Agendum" />
+    <NavigationProperty Name="Topic1" Relationship="GPModel.FK_Topic_Topic" FromRole="Topic" ToRole="Topic1" />
+    <NavigationProperty Name="Topic2" Relationship="GPModel.FK_Topic_Topic" FromRole="Topic1" ToRole="Topic" />
+    <NavigationProperty Name="Votes" Relationship="GPModel.FK_Vote_Topic" FromRole="Topic" ToRole="Vote" />
+    <Property Name="TopicImpWords" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <Association Name="FK_Agenda_Meeting">
+    <End Type="GPModel.Meeting" Role="Meeting" Multiplicity="1" />
+    <End Type="GPModel.Agendum" Role="Agendum" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Meeting">
+        <PropertyRef Name="MeetingID" />
+      </Principal>
+      <Dependent Role="Agendum">
+        <PropertyRef Name="meetingID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Topic_Agenda1">
+    <End Type="GPModel.Agendum" Role="Agendum" Multiplicity="1" />
+    <End Type="GPModel.Topic" Role="Topic" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Agendum">
+        <PropertyRef Name="AgendaID" />
+      </Principal>
+      <Dependent Role="Topic">
+        <PropertyRef Name="agendaId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Meeting_Location">
+    <End Type="GPModel.Location" Role="Location" Multiplicity="0..1" />
+    <End Type="GPModel.Meeting" Role="Meeting" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Location">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="Meeting">
+        <PropertyRef Name="locationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UserMeeting_Meeting">
+    <End Type="GPModel.Meeting" Role="Meeting" Multiplicity="1" />
+    <End Type="GPModel.UserMeeting" Role="UserMeeting" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Meeting">
+        <PropertyRef Name="MeetingID" />
+      </Principal>
+      <Dependent Role="UserMeeting">
+        <PropertyRef Name="meetingID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Topic_Topic">
+    <End Type="GPModel.Topic" Role="Topic" Multiplicity="0..1" />
+    <End Type="GPModel.Topic" Role="Topic1" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Topic">
+        <PropertyRef Name="TopicID" />
+      </Principal>
+      <Dependent Role="Topic1">
+        <PropertyRef Name="subTopicId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Vote_Topic">
+    <End Type="GPModel.Topic" Role="Topic" Multiplicity="1" />
+    <End Type="GPModel.Vote" Role="Vote" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Topic">
+        <PropertyRef Name="TopicID" />
+      </Principal>
+      <Dependent Role="Vote">
+        <PropertyRef Name="topicID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

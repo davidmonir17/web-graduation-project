@@ -1,0 +1,25 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DHXScheduler initialization sample</title>
+    <style>
+        body
+        {
+            background-color:#eee;
+        }
+    </style>
+
+    <link href="~/Content/dhtmlxScheduler/dhtmlxscheduler-responsive.css" rel="stylesheet" />
+    <script src="~/Scripts/dhtmlxScheduler/dhtmlxscheduler-responsive.js"></script>
+</head>
+<body>
+    <div style="height:700px;width:100%;margin:0 auto">
+        @Html.Raw(Model.Render())
+    </div>
+</body>
+
+</html>

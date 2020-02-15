@@ -1,0 +1,147 @@
+﻿@model IEnumerable<MeetingMinutesGP.Models.Topic>
+
+@{
+    ViewBag.Title = "EatTemplate";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Delicious</title>
+    <meta name="description" content="Free Bootstrap Theme by BootstrapMade.com">
+    <meta name="keywords" content="free website templates, free bootstrap themes, free template, free bootstrap, free website template">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Satisfy|Bree+Serif|Candal|PT+Sans">
+    <link rel="stylesheet" type="text/css" href="~/Content/EatTampelate/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/EatTampelate/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/EatTampelate/css/style.css">
+    <!-- =======================================================
+      Theme Name: Delicious
+      Theme URL: https://bootstrapmade.com/delicious-free-restaurant-bootstrap-theme/
+      Author: BootstrapMade.com
+      Author URL: https://bootstrapmade.com
+    ======================================================= -->
+</head>
+
+<body>
+    <!--banner-->
+    <section id="banner">
+        <div class="bg-color">
+            <header id="header">
+                <div class="container">
+                    <div id="mySidenav" class="sidenav">
+                        <a href="@Url.Content("~/Content/EatTamplete/")javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                        <a href="#about">About</a>
+                        <a href="#event">Event</a>
+                        <a href="#menu-list">Menu</a>
+                        <a href="#contact">Book a table</a>
+                    </div>
+                    <!-- Use any element to open the sidenav -->
+                    @*<span onclick="openNav()" class="pull-right menu-icon">☰</span>*@
+                </div>
+            </header>
+            <div class="container">
+                <div class="row">
+                    <div class="inner text-center">
+                        <h1 class="logo-name">Delicious</h1>
+                        <h2>Food To fit your lifestyle & health.</h2>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- / banner -->
+    <!--about-->
+    <section id="about" class="section-padding">
+        <div class="container" style="background-color:rgba(221, 221, 221, 0.33);">
+            <div class="row">
+                <div class="col-md-12 text-center marb-35">
+                    <h1 class="header-h">Delicious Meeting</h1>
+                    <p class="header-p">
+                        @*Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy
+                        <br>nibh euismod tincidunt ut laoreet dolore magna aliquam.*@
+                    </p>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="about-info">
+                            <h2 class="heading">Meeting details in agenda Title @ViewData["total"] :)</h2>
+                            @if (ViewData["MeetingLocation"] != null)
+                            {
+                                <h3 class="heading">Meeting Location: @ViewData["MeetingLocation"]</h3>
+                            }
+                            <h3 class="heading">Meeting Date: @ViewData["MeetingDate"]</h3>
+
+                            <h3 class="heading">Meeting Duration:@ViewData["MeetingDuration"] h</h3>
+
+
+
+
+
+                            <div class="details-list">
+                                <ul>
+                                    @foreach (var topics in Model)
+                                    {
+                                        <li><i class="fa fa-check"></i><strong>@topics.TopicName</strong></li>
+                                        <li><i class=""></i>@topics.TopicDescription</li>
+                                    }
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <img src="~/Content/EatTampelate/img/res01.jpg" alt="" class="img-responsive" height="">
+                    </div>
+                </div>
+                <div class="col-md-1">
+
+                </div>
+            </div>
+            @*<a href="@Url.Action("exportpage","NewMeeting")" class="btn btn-skin btn-lg"><i class="fa fa-angle-right"></i> <i class="fa fa-angle-right"></i></a>*@
+            <button onclick="RedirectToExport()" class="btn btn-skin btn-lg">Export to PDF<i class="fa fa-angle-right"></i></button>
+        </div>
+    </section>
+    <!--/about-->
+    <!-- event -->
+    <!--/ event -->
+    <!-- menu -->
+    <!--/ menu -->
+    <!-- contact -->
+    <!-- / contact -->
+    <!-- footer -->
+    <footer class="footer text-center">
+        <div class="footer-top">
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6 text-center">
+                    <div class="widget">
+                        <h4 class="widget-title">Delicious</h4>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- / footer -->
+
+    <script src="~/Content/EatTampelate/js/jquery.min.js"></script>
+    <script src="~/Content/EatTampelate/js/jquery.easing.min.js"></script>
+    <script src="~/Content/EatTampelate/js/bootstrap.min.js"></script>
+    <script src="~/Content/EatTampelate/js/custom.js"></script>
+    <script src="~/Content/EatTampelate/contactform/contactform.js"></script>
+    <script>
+        
+        function RedirectToExport() {
+            window.open('@Url.Action("exportpage", "NewMeeting", new { id =  @ViewData["total1"].ToString()  })');
+        }
+    </script>
+</body>
+
+</html>
+

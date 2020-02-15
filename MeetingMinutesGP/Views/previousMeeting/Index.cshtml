@@ -1,0 +1,178 @@
+﻿@model MeetingMinutesGP.Models.Meetings
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    #meetings {
+        max-height: 1500px;
+        overflow: auto;
+        min-height: 100px;
+    }
+</style>
+<!-- CSS File -->
+<link href="~/Content/NewMeeting/Meeting_Form.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="~/Content/mdb.min.css" rel="stylesheet">
+<!-- kendo-ui -->
+<!-- <base href="https://demos.telerik.com/kendo-ui/datetimepicker/index">  -->
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.common-material.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.material.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.material.mobile.min.css" />
+
+<!-- SCRIPTS -->
+<!-- SweetAlert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!-- JQuery -->
+<script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="~/Scripts/popper.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="~/Scripts/mdb.min.js"></script>
+<!-- kendo-ui -->
+<script src="https://kendo.cdn.telerik.com/2019.1.220/js/jquery.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2019.1.220/js/kendo.all.min.js"></script>
+
+<div class="card">
+    <div class="card-header" style="background-color:#E6E6E6;">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="md-form form-group" style="font-size:24px;margin-left:15px">
+                    Previous Meetings
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form form-group">
+                    <input type="datetime-local" class="form-control" title="datetimepicker" id="datetimepicker" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form form-group">
+                    <input type="datetime-local" class="form-control" title="datetimepicker" id="datetimepicker2" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form form-group">
+                    <button type="button" class="btn btn-primary btn-lg" id="searchButton">Search</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <ul id="meetings" class="list-group list-group-flush"></ul>
+</div>
+<script>
+    var meetings = document.getElementById("meetings");
+    ////Start dateTime
+    $(document).ready(function () {
+        // create DateTimePicker from input HTML element
+        $("#datetimepicker").kendoDateTimePicker({
+            value: new Date(),
+            dateInput: true
+        });
+    });
+
+    $(document).ready(function () {
+        // create DateTimePicker from input HTML element
+        $("#datetimepicker2").kendoDateTimePicker({
+            value: new Date(),
+            dateInput: true
+        });
+    });
+
+
+    @for (var i = 0; i < Model.meetings.Count; i++)
+    {
+       @:var link = '/CurrMeeting/customizeReport/@Model.meetings[i].MeetingID';
+               @:createDiv(('@Model.agendas[i].Title'),('@Model.meetings[i].MeetingDate'),(@Model.meetings[i].MeetingDuration),link);
+
+    }
+
+    var button = document.getElementById("searchButton"),
+        startDate = document.getElementById("datetimepicker"),
+        endDate = document.getElementById("datetimepicker2");
+
+    button.onclick = function(){
+        if(meetings.childElementCount>0)
+        {
+            while(meetings.firstChild)
+            {
+                meetings.removeChild(meetings.firstChild);
+            }
+        }
+        @for (var i = 0; i < Model.meetings.Count; i++)
+        {
+            @:var link = '/CurrMeeting/customizeReport/@Model.meetings[i].MeetingID';
+            @:compareDate(('@Model.agendas[i].Title'),('@Model.meetings[i].MeetingDate'),(@Model.meetings[i].MeetingDuration),link);
+        }
+    }
+    function compareDate(title, date, duration, linkAgenda){
+        //alert(startDate.value);
+        if(date>=startDate.value && date<=endDate.value)
+        {
+
+           createDiv(title,date,duration,linkAgenda);
+        }
+    }
+    function createDiv(title, date, duration, linkAgenda) {
+
+        var a = document.createElement("a"),
+            strong_title = document.createElement("strong"),
+            strong_date = document.createElement("strong"),
+            strong_duration = document.createElement("strong");
+        strong_title.appendChild(document.createTextNode(title));
+        strong_date.appendChild(document.createTextNode(date));
+        strong_duration.appendChild(document.createTextNode(duration.toString() + " Hours"));
+        a.appendChild(strong_title);
+
+        a.setAttribute("href", linkAgenda);
+
+        var newLi = document.createElement("li");
+        newLi.setAttribute("class", "list-group-item");
+
+        var newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        var col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        var formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+
+        formGroup.appendChild(a);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newLi.appendChild(newRow);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(strong_date);
+
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newLi.appendChild(newRow);
+
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(strong_duration);
+
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newLi.appendChild(newRow);
+
+
+
+
+        meetings.appendChild(newLi);
+    }
+
+
+</script>

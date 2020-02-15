@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+Welcome @HttpContext.Current.User.Identity.Name
+<br />
+@if (Request.IsAuthenticated)
+{
+    @Html.ActionLink("New Meeting", "Meeting_Form", "NewMeeting")<br />
+    @Html.ActionLink("All Users", "All_Users", "Follow")<br />
+    @Html.ActionLink("All Posts", "UploadPostsFromDatabaseOfUser", "Post")<br />
+    @Html.ActionLink("Meeting and Tasks", "TasksAndMeetings", "Home")<br />
+    @Html.ActionLink("Statistics", "startstat", "Statistics")<br />
+    @Html.ActionLink("MeetingNnow", "MeetingInformation", "MeetingNow")<br />
+    @Html.ActionLink("Calendar", "Index", "Calendar")<br />
+    using (Html.BeginForm("Logout", "User", FormMethod.Post, new { id = "logoutForm" }))
+    {
+        <a href="javascript:document.getElementById('logoutForm').submit()">Logout</a>
+    }
+   
+
+    @*<ul class="nav navbar-nav navbar-right">
+        <li>
+            @Html.ActionLink("Hello " + @HttpContext.Current.User.Identity.Name + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+        </li>
+        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+    </ul>*@
+}

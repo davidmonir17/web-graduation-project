@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+@*<h2>Index</h2>*@
+
+<div class="notification-icon" style="margin-bottom:5px">
+    <span class="glyphicon glyphicon-bell" style="font-size:20px; color:#aaa;cursor: pointer;" id="bellIcon"></span>
+    <span class="badge" id="ntCnt" style="font-size:10px; background:#f00; margin-left:-10px"></span>
+</div>
+
+<div id="divNotificaion">
+</div>
+<script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+<script src="~/signalr/Hubs/"></script>
+<script>
+    $('span#bellIcon').click(function (e) {
+        $('#divNotificaion').toggle();
+    })
+    $(document).ready(function () {
+        //debugger
+        $('#divNotificaion').hide();
+        //$('span#bellIcon').click(function (e) {
+            
+        //    $('#divNotificaion').toggle();
+        // Proxy created on the fly
+        var hub = $.connection.myNewHub;
+
+        // Declare a function on the hub hub so the server can invoke it
+        hub.client.displayStatus = function () {
+            //debugger
+            getData();
+        };
+
+        // Start the connection
+        $.connection.hub.start();
+        getData();
+
+        function getData() {
+            var divNotificaion = $('#divNotificaion');
+            $.ajax({
+                url: '/Notification/GetNotification',
+                type: 'GET',
+                datatype: 'json',
+                success: function (data) {
+                    debugger
+                    data = $.parseJSON(data);
+                    if (data.length > 0) {
+                        divNotificaion.empty();
+                        //// set Count
+                        $('#ntCnt').text(data.length);
+
+                        ///Make notification html
+                        for (var i = 0; i < data.length; i++) {
+                            var notification = '<div class="alert alert-success alert-dismissable">' +
+                        '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                        + data[i].Message +
+                    '</div>'
+                            divNotificaion.append(notification);
+                        }
+                       
+                    }
+                }, error: function (r, e, w) {
+                }
+            });
+        }
+    })
+    
+</script>
+

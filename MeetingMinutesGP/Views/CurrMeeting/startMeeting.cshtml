@@ -1,0 +1,799 @@
+﻿@using MeetingMinutesGP.Models;
+@model List<UserMeeting>
+@{
+    ViewBag.Title = "startMeeting";
+    GPEntities db = new GPEntities();
+    List<User> ParticipantsList = new List<User>();
+    for (int i = 0; i < Model.Count; i++)
+    {
+        User Participant = new User();
+        int user_id = Model[i].userID;
+        Participant = db.Users.Where(a => a.UserID == user_id).FirstOrDefault();
+        ParticipantsList.Add(Participant);
+    }
+    List<User> Attednded_List = new List<User>();
+    for (int i = 0; i < Model.Count; i++)
+    {
+        User Participant = new User();
+        int user_id = Model[i].userID;
+        Participant = db.Users.Where(a => a.UserID == user_id).FirstOrDefault();
+        if (Model[i].Attended == true)
+        {
+            Attednded_List.Add(Participant);
+        }
+    }
+
+    int counter1 = 0;
+    int counter2 = 0;
+    List<string> taskStatus = new List<string>() { "Not started", "In progress", "Put on hold", "Completed" };
+    GPEntities ent = new GPEntities();
+
+
+    MeetingMinutes meetin = new MeetingMinutes();
+    int meetid = int.Parse(Session["CurrentMeeting"].ToString());
+    meetin.meeting = ent.Meetings.Where(m => m.MeetingID == meetid).FirstOrDefault();
+    meetin.location = ent.Locations.Where(l => l.LocationID == meetin.meeting.locationID).FirstOrDefault();
+    List<UserMeeting> user_meetin = new List<UserMeeting>();
+    user_meetin = ent.UserMeetings.Where(u => u.meetingID == meetin.meeting.MeetingID).ToList();
+
+    meetin.UserMeeting = new List<User>();
+    for (int i = 0; i < user_meetin.Count; i++)
+    {
+        int xx = user_meetin[i].userID;
+        var user = ent.Users.Where(u => u.UserID == xx).FirstOrDefault();
+        if (user_meetin[i].Coordinator == true)
+        {
+            meetin.UserEmail = user.Email;
+        }
+        else
+        {
+            meetin.UserMeeting.Add(user);
+        }
+    }
+    meetin.users = new List<User>();
+    meetin.users = ent.Users.Where(u => u.Email != meetin.UserEmail).ToList();
+    meetin.agenda = ent.Agenda.Where(a => a.meetingID == meetin.meeting.MeetingID).FirstOrDefault();
+
+    meetin.topics = new List<Topic>();
+    //meetin.topics = ent.Topics.Where(t => t.agendaId == meetin.agenda.AgendaID).ToList();
+    meetin.topics = (List<Topic>)ViewData["meetigtopicslist"];
+    //location list in combo
+    var locLst = ent.Locations.ToList();
+    var Current_User = ent.Users.Where(a => a.Email == meetin.UserEmail).FirstOrDefault();
+    meetin.company = new List<string>();
+    meetin.company.Add(Current_User.Company);
+    List<string> locNames = new List<string>();
+    for (var i = 0; i < locLst.Count; i++)
+    {
+        if (locLst[i].Company == meetin.company[0])
+        {
+            locNames.Add(locLst[i].Address);
+        }
+    }
+    meetin.addresses = locNames.Distinct().ToList();
+}
+<style>
+        .header {
+            background-color: #0e2737;
+            padding: 15px;
+            height: auto;
+            text-align: center;
+            color: white;
+            /*font-size: 20px;
+            font-weight: bold;*/
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-bottom: 6px solid #18bcaa;
+        }
+
+        .popupheader {
+            background-color: #0e2737;
+            padding: 10px;
+            margin: 10px;
+            /*width: 97%;*/
+            height: auto;
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .Popbtn {
+            color: white;
+            background-color: #1cc3b2;
+            padding: 8px 20px;
+            /*margin: 8px;*/
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            height: auto;
+            white-space: normal;
+            margin-bottom: 10px;
+            border: none;
+        }
+
+        .Popcancel {
+            background-color: #878787;
+        }
+
+        .btnh {
+            color: white;
+            background-color: #1cc3b2;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            width: 100%;
+            height: auto;
+            white-space: normal;
+            margin-bottom: 10px;
+            border: none;
+            box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+            outline: none;
+        }
+
+        .cbl {
+            background-color: gray;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .cba {
+            background-color: #1cc3b2;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 10px;
+            float: left;
+        }
+
+        .cbr {
+            background-color: red;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            float: left;
+        }
+
+        .close_met {
+            color: white;
+            background-color: #1cc3b2;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            width: 100%;
+            height: auto;
+            white-space: normal;
+            margin-bottom: 10px;
+            margin: 30px;
+        }
+
+        #upload_button {
+            display: inline-block;
+        }
+
+            #upload_button input[type=file] {
+                display: none;
+            }
+
+        #btAdd {
+            float: right;
+        }
+
+        #inp {
+            grid-rows: 50;
+            overflow: visible;
+        }
+
+        .h:focus {
+            border-color: #1cc3b2;
+        }
+
+        .clsm {
+            color: white;
+            background-color: #1cc3b2;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            width: 30%;
+            height: auto;
+            white-space: normal;
+            margin-bottom: 10px;
+            margin: 30px;
+            left: 35%;
+        }
+
+        .meetnowcont {
+            margin: 0 !important;
+        }
+
+        .meetingcontent {
+            border-radius: 8px;
+            border: 2px ridge #878787;
+            padding: 0;
+            border-radius: 8px;
+            border-width: 1px 0 0 6px;
+            border-style: solid;
+            box-shadow: 0 7px 8px -4px rgba(0,0,0,.2), 0 12px 17px 2px rgba(0,0,0,.14), 0 5px 22px 4px rgba(0,0,0,.12);
+            /*font-family: "Poppins", sans-serif;*/
+        }
+        /*#18bcaa*/
+        #meetingtitle {
+            background: #18bcaa;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 7px 7px 0 0;
+        }
+
+        .meetingcontentnottitle {
+            padding: 25px 40px;
+        }
+
+        #mettTitle {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .agendatitle {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 8px 0;
+        }
+
+        .meetigInfo {
+            box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;
+            margin-bottom: 10px;
+            padding: 20px 25px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .swal2-popup {
+            width: 478px !important;
+            border-radius: 5px !important;
+            padding: 30px;
+        }
+
+        .swal2-confirm swal2-styled {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            padding: 10px 24px !important;
+        }
+
+        .startbutton {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: #878787;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 14px;
+            padding: 10px;
+            width: 60px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+            outline: none;
+        }
+
+            .startbutton span {
+                cursor: pointer;
+                display: inline-block;
+                position: relative;
+                transition: 0.5s;
+            }
+
+                .startbutton span:after {
+                    content: '\00bb';
+                    position: absolute;
+                    opacity: 0;
+                    top: 0;
+                    right: -20px;
+                    transition: 0.5s;
+                }
+
+            .startbutton:hover span {
+                padding-right: 15px;
+            }
+
+                .startbutton:hover span:after {
+                    opacity: 1;
+                    right: 0;
+                }
+
+        .topiccounter {
+            display: inline-block;
+            line-height: 10px;
+            border: 5px solid #0e2737;
+            color: #18bcaa;
+            font-weight: bold;
+            border-radius: 50%;
+            padding-right: 8px;
+            padding-left: 12px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 40px !important;
+            height: 40px !important;
+            /*padding:5px 10px;*/
+        }
+
+        .votebtn {
+            background: #18bcaa;
+            border: none;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-left: 10px;
+            color: #fff;
+        }
+
+            .votebtn:hover {
+                background: #878787;
+                color: #fff;
+            }
+
+            .votebtn:focus {
+                background: #878787;
+                color: #fff;
+            }
+        /*.VoteActionlink{
+        text-decoration:none;
+        color:white;
+        padding-right:5px;
+    }
+    .VoteActionlink:hover{
+        text-decoration:none;
+        color:white;
+        padding-right:5px;
+
+    }
+    .VoteActionlink:checked{
+        text-decoration:none;
+        color:white;
+        padding-right:5px;
+
+    }*/
+        .closemeetingbtn {
+            background-color: rgb(245, 175, 41);
+            box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 15px;
+            line-height: 18px;
+            float: right;
+            margin-bottom: 15px;
+        }
+
+            .closemeetingbtn span {
+                margin-right: 5px;
+                font-size: 18px;
+            }
+</style>
+@*<h2>start Meeting</h2>*@
+<div class="col-sm-12 header" align="center">
+    <label id="mettTitle">@meetin.agenda.Title</label><br />
+</div>
+@{
+    int x = 1;
+    byte[] encoded = System.Text.Encoding.UTF8.GetBytes(x.ToString());
+    string encyptedOption = Convert.ToBase64String(encoded);
+}
+<div class="col-sm-12 meetnowcont" style="margin:30px;padding:10px;box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;height:80px;">
+    <div class="col-sm-4">
+        <button type="button" class="btnh glyphicon glyphicon-tasks" title="Tasks" onclick="RedirectToCalendar();" style="padding:10px;margin:10px;float:left;width:111.5px;height:42px;"></button>
+    </div>
+    <div class="col-sm-4" align="center">
+        <button align="center" type="button" class="btnh glyphicon glyphicon-user" title="Chat" onclick="OpenChat();" style="padding:10px;margin:10px;width:111.5px;height:42px;"></button>
+    </div>
+    <div class="col-sm-4">
+        <!-- Button trigger modal -->
+        <button style="float:right;width:140px;height:42px;margin:10px;padding:10px;" type="button" class="btnh" id="addbtn" data-toggle="modal" data-target="#exampleModalCenter" title="Attendence"> <i class="glyphicon glyphicon-check"></i></button>
+    </div>
+</div>
+<hr />
+<div class="col-md-12 meetigInfo row">
+    <div class="col-md-7">
+        <label class="agendatitle">Start Date: </label>
+        <label>@meetin.meeting.MeetingDate</label><br />
+        <label class="agendatitle">Duration: </label>
+        <label>@meetin.meeting.MeetingDuration Hours</label><br />
+        <label class="agendatitle">Leader: </label>
+        <label>@meetin.UserEmail</label><br />
+
+
+    </div>
+    <div class="col-md-5">
+        <label class="agendatitle">Participants: </label><br />
+        @for (int i = 0; i < meetin.UserMeeting.Count; i++)
+            {
+
+            <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @meetin.UserMeeting[i].Email</label><br />
+        }
+    </div>
+</div><hr />
+<div>
+    <div class="col-md-12  meetingcontent">
+
+        <div class="meetingcontentnottitle">
+
+
+
+            <label class="agendatitle" id="agag">Agenda</label><br />
+            @{
+                int counter = 0;
+
+                for (int i = 0; i < meetin.topics.Count; i++)
+                {
+                    if (meetin.topics[i].subTopicId == null)
+                    {
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label><strong>@(++counter). @meetin.topics[i].TopicName</strong></label><br />
+                                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Topic Description: @(meetin.topics[i].TopicDescription)</label><br />
+                                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planned time: @(meetin.topics[i].TopicTime) min.</label><br />
+                                @if (meetin.topics[i].FileLocation != null)
+                                {
+                                    string fileLoc = meetin.topics[i].FileLocation;
+                                    string[] name = fileLoc.Split('\\');
+                                    string fileName = name[name.Count() - 1];
+
+                                    <div class="file_div">
+                                        <div>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            @Html.ActionLink(fileName, "Action", "Agenda", new { TopicId = meetin.topics[i].TopicID }, new { @class = "glyphicon glyphicon-download-alt", @role = "button" })
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="col-md-4">
+                                @{
+                                    string topID = "demo" + i;
+                                    string topIDB = "demo" + i + "B";
+                                    <button id='@topIDB' onclick="start('@topID','@meetin.topics[i].TopicTime')" class="startbutton"><span>Start</span></button>
+                                    <span id='@topID' class="topiccounter">0</span>
+                                    @*<button class="btn btn-info votebtn">Vote <span class="glyphicon glyphicon-thumbs-up"></span><span class="glyphicon glyphicon-thumbs-down"></span></button>*@
+
+                                byte[] encoded2 = System.Text.Encoding.UTF8.GetBytes(@meetin.topics[i].TopicID.ToString());
+                                string encyptedID = encyptedID = Convert.ToBase64String(encoded2);
+
+                                <a href="@Url.Action("voteInfo", "vote")?id=@encyptedID" class="btn btn-secondary votebtn" target="_blank">Vote <span class="glyphicon glyphicon-thumbs-up"> </span> <span class="glyphicon glyphicon-thumbs-down"></span></a>
+
+                                @*<span class="btn btn-info votebtn">*@
+                                    @*<a href="@Url.Action("ActionName", "ControllerName")">Something</a>*@
+
+                                    @*<a href="@Html.ActionLink("voteInfo", "vote")" class = "VoteActionlink" target = "_blank" id = @encyptedID>Vote <span class="glyphicon glyphicon-thumbs-up"></span><span class="glyphicon glyphicon-thumbs-down"></span></a>*@
+
+
+                                    @*@Html.ActionLink(" Vote", "voteInfo", "vote", new { id = encyptedID }, new { @class = "VoteActionlink", target = "_blank" })<span class="glyphicon glyphicon-thumbs-up"></span><span class="glyphicon glyphicon-thumbs-down"></span>*@
+
+                                    @*</span>*@
+                                }
+                            </div>
+                        </div>
+
+                                    }
+                                    else
+                                    {
+
+                                        int spacecount = 20;
+
+                                        for (int j = 0; j < (meetin.topics[i].TopicName).Length; j++)
+                                        {
+                                            if (meetin.topics[i].TopicName[j] == '.')
+                                            {
+                                                meetin.topics[i].TopicName = meetin.topics[i].TopicName.Remove(j, 1);
+                                                spacecount += 25;
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
+                                        }
+                                        if (meetin.topics[i].TopicName[0] == '.')
+                                        {
+                                            meetin.topics[i].TopicName = meetin.topics[i].TopicName.Remove(0, 1);
+                                            spacecount += 25;
+                                        }
+                                        <br /><br />
+
+
+
+                                        <div class="row">
+                                            <div style="margin-left: @(spacecount)px">
+                                                <label><strong>@meetin.topics[i].TopicName</strong></label><br />
+                                                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Topic Description: @(meetin.topics[i].TopicDescription)</label><br />
+                                                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planned time: @(meetin.topics[i].TopicTime) min.</label><br />
+                                                @if (meetin.topics[i].FileLocation != null)
+                                                {
+                                                    string fileLoc = meetin.topics[i].FileLocation;
+                                                    string[] name = fileLoc.Split('\\');
+                                                    string fileName = name[name.Count() - 1];
+
+                                                    <div class="file_div">
+                                                        <div>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            @Html.ActionLink(fileName, "Action", "Agenda", new { TopicId = meetin.topics[i].TopicID }, new { @class = "glyphicon glyphicon-download-alt", @role = "button" })
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                            </div>
+                                        </div>
+
+                                                        }
+                                                    }
+            }
+        </div>
+
+    </div>
+
+</div>
+<div>
+
+</div>
+<!--Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <br>
+                <h3 class="modal-title popupheader" id="exampleModalLongTitle"><strong>Attendance Sheet</strong></h3>
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            @using (@Html.BeginForm("SaveAttendance", "CurrMeeting"))
+            {
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Attended</th>
+                        </thead>
+                        <tbody>
+                            @{for (int i = 0; i < Model.Count; i++)
+                                {
+
+                                    <tr>
+                                        <td>@ParticipantsList[i].Name</td>
+                                        <td>@ParticipantsList[i].Email</td>
+                                        <td>@Html.CheckBoxFor(m => m[i].Attended)</td>
+                                        @Html.HiddenFor(m => m[i].userID)
+                                        @Html.HiddenFor(m => m[i].meetingID)
+                                        @Html.HiddenFor(m => m[i].AssignedTask)
+                                        @Html.HiddenFor(m => m[i].TaskStartDate)
+                                        @Html.HiddenFor(m => m[i].TaskEndDate)
+                                    </tr>
+
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="Popbtn">Save changes</button>
+                    <button type="button" class="Popbtn Popcancel" data-dismiss="modal">Close</button>
+                </div>
+                                }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div>
+    <button type="button" class="closemeetingbtn" id="addbtn" data-toggle="modal" data-target="#TaskPOPUp" title="Tasks">
+        <span class="glyphicon glyphicon-log-in"></span>CLOSE MEETING
+    </button>
+</div>
+
+<div class="modal fade" id="TaskPOPUp" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:1300px;height:1100px;position:center;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title header" id="exampleModalLongTitle"><strong>Assign Tasks To Participants</strong></h3>
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            @using (@Html.BeginForm("SaveTasks", "Attendence"))
+            {
+                <div class="modal-body">
+                    <table class="table table-striped w-auto">
+                        <thead>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Assigned Task</th>
+                        <th>Task Description</th>
+                        <th>Task Start Date</th>
+                        <th>Task End Date</th>
+                        <th>Task Status</th>
+                        </thead>
+                        <tbody>
+                            @{for (int i = 0; i < Model.Count; i++)
+                                {
+                                    counter2++;
+                                    <tr>
+                                        @Html.HiddenFor(m => m[i].userID)
+                                        @Html.HiddenFor(m => m[i].meetingID)
+                                        <th scope="row">@counter2</th>
+                                        <td>@ParticipantsList[i].Name</td>
+                                        <td>@ParticipantsList[i].Email</td>
+                                        <td>@Html.TextBoxFor(m => m[i].AssignedTask, new { @class = "form-control", @placeholder = "Task Name"})</td>
+                                        <td>@Html.TextBoxFor(m => m[i].TaskDescription, new { @class = "form-control", @placeholder = "Task Description"})</td>
+                                        <td>@Html.TextBoxFor(m => m[i].TaskStartDate, new { type = "datetime-local", @class = "form-control"})</td>
+                                        <td>@Html.TextBoxFor(m => m[i].TaskEndDate, new { type = "datetime-local", @class = "form-control"})</td>
+                                        <td>@Html.DropDownListFor(m => m[i].TaskStatus, new SelectList(taskStatus), new { @class = "form -control" })</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="Popbtn">Save and Close Meeting</button>
+
+                    <button type="button" class="Popbtn Popcancel" data-dismiss="modal">Close</button>
+                </div>
+                                }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+
+    function RedirectToCalendar() {
+        window.open('@Url.Action("Index", "Calendar", new { id = encyptedOption })');
+        @*location.href = '@Url.Action("Index", "Calendar", new { id = encyptedOption })';*@
+    }
+    function OpenChat() {
+        window.open('@Url.Action("chat", "currmeeting", new { id = @meetin.meeting.MeetingID })');
+    @*location.href = '@Url.Action("Index", "Calendar", new { id = encyptedOption })';*@
+    }
+    
+    var timerInterval = null;
+    var topictimeG = 0;
+    var isPaused = false;
+    function changeValue(topid2, topictime2) {
+        if (document.getElementById(topid2).innerHTML == 0) {
+            topictimeG = topictime2;
+        }
+        if (topictimeG == document.getElementById(topid2).innerHTML) {
+            isPaused = true;
+            swal({
+                title: "Topic time terminated",
+                text: "Are you sure you want to expand topic time!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    //swal("Topic time expanded", {
+                    //    icon: "success",
+                    //});
+                    //document.getElementById(topid2).innerHTML = ++value;
+
+
+
+
+
+                    Swal.fire({
+                        title: 'Enter time you want to expand in minutes',
+                        input: 'text',
+
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        confirmButtonText: 'OK',
+                        showLoaderOnConfirm: true,
+                        preConfirm: (login) => {
+                            return fetch(`//api.github.com/users/${login}`)
+                              .then(response => {
+                                  if (!response.ok) {
+                                      throw new Error(response.statusText)
+                                  }
+                                  return response.json()
+                              })
+                              .catch(error => {
+                                  Swal.showValidationMessage(
+                                    `Enter valid value`
+                                  )
+                              })
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((result) => {
+                        if (result.value) {
+
+                            topictimeG = topictimeG + (parseInt((result.value.login * 60) / 12));
+                            //document.getElementById("agag").innerHTML = topictimeG;
+                            //document.getElementById(topid2).innerHTML = ++value;
+                            isPaused = false;
+                        }
+                    })
+                    document.getElementById(topid2).innerHTML = ++value;
+
+                } else {
+                    swal("Move to next topic!");
+                    clearInterval(timerInterval);
+                    document.getElementById(topid2 + "B").style.visibility = 'hidden';
+                }
+            });
+
+        }
+        else {
+            document.getElementById(topid2).innerHTML = ++value;
+        }
+    }
+
+
+    function start(topid, topictime) {
+        stop();
+        value = 0;
+        isPaused = false;
+        timerInterval = setInterval(function () { if (isPaused == false) { changeValue(topid, (topictime * 60) / 12); } }, 1000);
+
+    }
+    var stop = function () {
+        clearInterval(timerInterval);
+    }
+
+
+    //window.onbeforeunload = function () {
+
+    //    sessionStorage.setItem("namekhlaed", $('#demo0').val());
+
+    //}
+    //window.onload = function () {
+
+
+    //    var namekhlaed = sessionStorage.getItem("namekhlaed");
+    //        if (namekhlaed !== null) $('#demo0').val(namekhlaed);
+
+    //}
+</script>

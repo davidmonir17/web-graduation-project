@@ -1,0 +1,74 @@
+data<-read.csv("C:\\Users\\Hussein Ata\\Desktop\\bank_load.csv")
+data
+data$age[data$age<0]<-data$age[data$age<0]*-1
+data
+hist(data$age,main="Hussein",xlab = "Age",ylab = "Age Frequency",col="green")
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="red")
+
+boxplot(data$age,main="Main Gain",ylab="This is y",ylim=c(0,70))
+
+fbox<-data[data$gender=="FEMALE",]
+mbox<-data[data$gender=="MALE",]
+chiddata<-data[data$children]
+boxplot(fbox$age,mbox$age,data$children,xlab="This is x",ylab="This is y",main="Age for both male and female",ylim=c(0,100),names=c("Male","Female","children"))
+plot(data$children,data$married,xlab="Children",ylab="Married",main="Children VS Married",type  = "l")
+lines(t1,data$married,lty=2)
+legend(0.5,4,c("Intel","Dell"),lty=c(1,2))
+par(mfrow=c(2,2))
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="red")
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="green")
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="blue")
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="red")
+
+
+boxplot(age)
+boxplot(male$age,female$age,main="Male with Female",names=c("Male","Female"),ylab="Age",ylim=c(0,70))
+plot(male$age,male$children,xlab="Age",ylab="Children",main="Age With Children",type="l")
+lines(female$age,female$children,lty=2)
+legend(50,2,c("Male","Female"),lty=c(1,2))
+par(mfrow=c(2,2))
+boxplot(age)
+boxplot(male$age,female$age,main="Male with Female",names=c("Male","Female"),ylab="Age",ylim=c(0,70))
+plot(male$age,male$children,xlab="Age",ylab="Children",main="Age With Children",type="l")
+lines(female$age,female$children,lty=2)
+legend(50,2,c("Male","Female"),lty=c(1,2))
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="red")
+
+
+par(mfrow=c(2,2))
+hist(data$income,xlab="Age",ylab="Frequency",col="blue",main="Histogram")
+
+element1<-data[data$age==27,]
+element2<-data[data$age==23,]
+element3<-data[data$age==36,]
+boxplot(element1$income,element2$income,element3$income,names=c("e1","e2","e3"),main="Boxplots",xlab="x",ylab="y")
+
+plot(data$age,data$children,main="ScatterPlot",xlab="xx",ylab="yy",pch=2)
+
+plot(data$age,data$children,main="closing stock price",xlab="time",ylab="price",type="l")
+lines(data$income,data$children,lty=2)
+legend(40,2,c("1","2"),lty=c(1,2))
+
+x.first<-rnorm(100)
+x.second<-rnorm(100,2)
+boxplot(x.first,x.second,names=c("1","2"),ylim=c(-2,5))
+par(mfrow=c(1,1))
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="green",breaks=20,density=1)
+lines(density(10,10),col="blue")
+
+plot(density((log10(data$age))))
+rug(log10(data$age))
+summary(data$age)
+ggplot(data,main="closing stock price",xlab="time",ylab="price",aes(x=data$age,fill=data$children))+geom_density(alpha(0.3),col(NA))
+data
+
+plot(data$age)
+mtext("The first variable",side=1,line=4)
+mtext("The second variable",side=2,line=2)
+mtext("The third variable",side=3,line=3)
+mtext(expression(y==sum(i,1,x,i)),side=3,line=0)
+
+hist(data$age,main="Header of histogram",xlab = "This is X",ylab ="This is Y",col="red",ylim=c(0,26))
+rect(60,0,70,25,border="blue")
+text(65,26,"At resk",col="red")
+abline(v=y)

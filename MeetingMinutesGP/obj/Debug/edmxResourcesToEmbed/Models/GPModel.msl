@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="GPModelStoreContainer" CdmEntityContainer="GPEntities">
+    <EntitySetMapping Name="Agenda">
+      <EntityTypeMapping TypeName="GPModel.Agendum">
+        <MappingFragment StoreEntitySet="Agenda">
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="AgendaID" ColumnName="AgendaID" />
+          <ScalarProperty Name="meetingID" ColumnName="meetingID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Locations">
+      <EntityTypeMapping TypeName="GPModel.Location">
+        <MappingFragment StoreEntitySet="Location">
+          <ScalarProperty Name="Company" ColumnName="Company" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="LocationID" ColumnName="LocationID" />
+          <ScalarProperty Name="Floor" ColumnName="Floor" />
+          <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Posts">
+      <EntityTypeMapping TypeName="GPModel.Post">
+        <MappingFragment StoreEntitySet="Post">
+          <ScalarProperty Name="PostID" ColumnName="PostID" />
+          <ScalarProperty Name="PostContent" ColumnName="PostContent" />
+          <ScalarProperty Name="PostPrivacy" ColumnName="PostPrivacy" />
+          <ScalarProperty Name="userID" ColumnName="userID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="GPModel.User">
+        <MappingFragment StoreEntitySet="User">
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Birthdate" ColumnName="Birthdate" />
+          <ScalarProperty Name="Phone" ColumnName="Phone" />
+          <ScalarProperty Name="Company" ColumnName="Company" />
+          <ScalarProperty Name="Position" ColumnName="Position" />
+          <ScalarProperty Name="ActivationCode" ColumnName="ActivationCode" />
+          <ScalarProperty Name="IsEmailVerified" ColumnName="IsEmailVerified" />
+          <ScalarProperty Name="ResetPasswordCode" ColumnName="ResetPasswordCode" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserMeetings">
+      <EntityTypeMapping TypeName="GPModel.UserMeeting">
+        <MappingFragment StoreEntitySet="UserMeeting">
+          <ScalarProperty Name="TaskIntiatorEmail" ColumnName="TaskIntiatorEmail" />
+          <ScalarProperty Name="CalendarTaskID" ColumnName="CalendarTaskID" />
+          <ScalarProperty Name="TaskStatus" ColumnName="TaskStatus" />
+          <ScalarProperty Name="TaskDescription" ColumnName="TaskDescription" />
+          <ScalarProperty Name="Coordinator" ColumnName="Coordinator" />
+          <ScalarProperty Name="userID" ColumnName="userID" />
+          <ScalarProperty Name="meetingID" ColumnName="meetingID" />
+          <ScalarProperty Name="Attended" ColumnName="Attended" />
+          <ScalarProperty Name="AssignedTask" ColumnName="AssignedTask" />
+          <ScalarProperty Name="TaskStartDate" ColumnName="TaskStartDate" />
+          <ScalarProperty Name="TaskEndDate" ColumnName="TaskEndDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="Follow" TypeName="GPModel.Follow" StoreEntitySet="Follow">
+      <EndProperty Name="User">
+        <ScalarProperty Name="UserID" ColumnName="FollowerID" />
+      </EndProperty>
+      <EndProperty Name="User1">
+        <ScalarProperty Name="UserID" ColumnName="FollowedID" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <FunctionImportMapping FunctionImportName="GetFllowTableData" FunctionName="GPModel.Store.FolloweTable">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="GPModel.FolloweTable_Result">
+          <ScalarProperty Name="FollowerID" ColumnName="FollowerID" />
+          <ScalarProperty Name="FollowedID" ColumnName="FollowedID" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="PersonalTasks">
+      <EntityTypeMapping TypeName="GPModel.PersonalTask">
+        <MappingFragment StoreEntitySet="PersonalTask">
+          <ScalarProperty Name="userId" ColumnName="userId" />
+          <ScalarProperty Name="TaskStatus" ColumnName="TaskStatus" />
+          <ScalarProperty Name="TaskEndDate" ColumnName="TaskEndDate" />
+          <ScalarProperty Name="TaskStartDate" ColumnName="TaskStartDate" />
+          <ScalarProperty Name="TaskDescription" ColumnName="TaskDescription" />
+          <ScalarProperty Name="TaskName" ColumnName="TaskName" />
+          <ScalarProperty Name="TaskOwnerEmail" ColumnName="TaskOwnerEmail" />
+          <ScalarProperty Name="TaskIntiatorEmail" ColumnName="TaskIntiatorEmail" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Options">
+      <EntityTypeMapping TypeName="GPModel.Option">
+        <MappingFragment StoreEntitySet="Options">
+          <ScalarProperty Name="OptionCount" ColumnName="OptionCount" />
+          <ScalarProperty Name="voteID" ColumnName="voteID" />
+          <ScalarProperty Name="OptionDescription" ColumnName="OptionDescription" />
+          <ScalarProperty Name="OptionID" ColumnName="OptionID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Votes">
+      <EntityTypeMapping TypeName="GPModel.Vote">
+        <MappingFragment StoreEntitySet="Vote">
+          <ScalarProperty Name="VoteDescription" ColumnName="VoteDescription" />
+          <ScalarProperty Name="topicID" ColumnName="topicID" />
+          <ScalarProperty Name="VoteResult" ColumnName="VoteResult" />
+          <ScalarProperty Name="VoteName" ColumnName="VoteName" />
+          <ScalarProperty Name="VoteID" ColumnName="VoteID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="sysdiagrams">
+      <EntityTypeMapping TypeName="GPModel.sysdiagram">
+        <MappingFragment StoreEntitySet="sysdiagrams">
+          <ScalarProperty Name="definition" ColumnName="definition" />
+          <ScalarProperty Name="version" ColumnName="version" />
+          <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+          <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="sp_alterdiagram1" FunctionName="GPModel.Store.sp_alterdiagram" />
+    <FunctionImportMapping FunctionImportName="sp_creatediagram1" FunctionName="GPModel.Store.sp_creatediagram" />
+    <FunctionImportMapping FunctionImportName="sp_dropdiagram1" FunctionName="GPModel.Store.sp_dropdiagram" />
+    <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition1" FunctionName="GPModel.Store.sp_helpdiagramdefinition">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="GPModel.sp_helpdiagramdefinition1_Result">
+          <ScalarProperty Name="version" ColumnName="version" />
+          <ScalarProperty Name="definition" ColumnName="definition" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="sp_helpdiagrams1" FunctionName="GPModel.Store.sp_helpdiagrams">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="GPModel.sp_helpdiagrams1_Result">
+          <ScalarProperty Name="Database" ColumnName="Database" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="Owner" ColumnName="Owner" />
+          <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="sp_renamediagram1" FunctionName="GPModel.Store.sp_renamediagram" />
+    <FunctionImportMapping FunctionImportName="sp_upgraddiagrams1" FunctionName="GPModel.Store.sp_upgraddiagrams" />
+    <FunctionImportMapping FunctionImportName="SqlQueryNotificationStoredProcedure_91f10b5a_da17_4cce_aa59_94a706f8bcbd" FunctionName="GPModel.Store.SqlQueryNotificationStoredProcedure_91f10b5a_da17_4cce_aa59_94a706f8bcbd" />
+    <FunctionImportMapping FunctionImportName="SqlQueryNotificationStoredProcedure_ad919e6d_0225_4f24_b61e_4546616c633e" FunctionName="GPModel.Store.SqlQueryNotificationStoredProcedure_ad919e6d_0225_4f24_b61e_4546616c633e" />
+    <EntitySetMapping Name="Notifications">
+      <EntityTypeMapping TypeName="GPModel.Notification">
+        <MappingFragment StoreEntitySet="Notification">
+          <ScalarProperty Name="VoteID" ColumnName="VoteID" />
+          <ScalarProperty Name="MeetingId" ColumnName="MeetingId" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="DetailsURL" ColumnName="DetailsURL" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+          <ScalarProperty Name="NotificaionId" ColumnName="NotificaionId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Meetings">
+      <EntityTypeMapping TypeName="GPModel.Meeting">
+        <MappingFragment StoreEntitySet="Meeting">
+          <ScalarProperty Name="ImageLocation" ColumnName="ImageLocation" />
+          <ScalarProperty Name="ReferenceLink" ColumnName="ReferenceLink" />
+          <ScalarProperty Name="ReferenceLinkName" ColumnName="ReferenceLinkName" />
+          <ScalarProperty Name="locationID" ColumnName="locationID" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="MeetingDate" ColumnName="MeetingDate" />
+          <ScalarProperty Name="MeetingDuration" ColumnName="MeetingDuration" />
+          <ScalarProperty Name="MeetingID" ColumnName="MeetingID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Topics">
+      <EntityTypeMapping TypeName="GPModel.Topic">
+        <MappingFragment StoreEntitySet="Topic">
+          <ScalarProperty Name="TopicImpWords" ColumnName="TopicImpWords" />
+          <ScalarProperty Name="subTopicId" ColumnName="subTopicId" />
+          <ScalarProperty Name="FileLocation" ColumnName="FileLocation" />
+          <ScalarProperty Name="ListOfItems" ColumnName="ListOfItems" />
+          <ScalarProperty Name="agendaId" ColumnName="agendaId" />
+          <ScalarProperty Name="TopicPriority" ColumnName="TopicPriority" />
+          <ScalarProperty Name="TopicTime" ColumnName="TopicTime" />
+          <ScalarProperty Name="TopicDescription" ColumnName="TopicDescription" />
+          <ScalarProperty Name="TopicName" ColumnName="TopicName" />
+          <ScalarProperty Name="TopicID" ColumnName="TopicID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,6 @@
+remember me
+delete login and register button after login
+delete pages from back button 
+delete el attributes el zyada fi table user
+
+setting

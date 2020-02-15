@@ -1,0 +1,1009 @@
+﻿@model MeetingMinutesGP.Models.MeetingMinutes
+
+<style>
+    span[title="Attach File"] {
+        font-size: 23px;
+        color: #0056B3;
+        cursor: pointer;
+    }
+
+    #upload_button {
+        display: inline-block;
+    }
+
+        #upload_button input[type=file] {
+            display: none;
+        }
+
+    .file_div {
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.428571429;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+    }
+
+        .file_div div {
+            display: inline-block;
+            width: 225px;
+            overflow: hidden;
+        }
+
+            .file_div div:hover, .file_div span:hover {
+                background: #E0E0E0;
+            }
+</style>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+<!-- CSS File -->
+<link href="~/Content/NewMeeting/Meeting_Form.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="~/Content/mdb.min.css" rel="stylesheet">
+<!-- kendo-ui -->
+<!-- <base href="https://demos.telerik.com/kendo-ui/datetimepicker/index">  -->
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.common-material.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.material.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.material.mobile.min.css" />
+
+<!-- SCRIPTS -->
+<!-- SweetAlert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!-- JQuery -->
+<script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="~/Scripts/popper.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="~/Scripts/mdb.min.js"></script>
+<!-- kendo-ui -->
+<script src="https://kendo.cdn.telerik.com/2019.1.220/js/jquery.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2019.1.220/js/kendo.all.min.js"></script>
+
+@{
+    ViewBag.Title = "EditMeeting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br /><br />
+<h2>Edit Meeting</h2>
+<br /><br />
+
+@using (@Html.BeginForm("UpdateMeeting", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    string pathFile = "";
+    string file_name = "";
+    if (Model.topics[0].FileLocation != null)
+    {
+        string file_path = Model.topics[0].FileLocation;
+        string[] name = file_path.Split('\\');
+        file_name = name[name.Count() - 1];
+
+        for (var j = 0; j < name.Length; j++)
+        {
+            pathFile += name[j];
+            if (j != name.Length - 1)
+            {
+                pathFile += "+";
+            }
+        }
+    }
+
+    @Html.TextBoxFor(m => m.meeting.MeetingID, new { type = "hidden" })
+    <!-- Title input -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="md-form form-group form-lg">
+                <h6>Title*</h6>
+                @Html.TextBoxFor(m => m.agenda.Title, new { @class = "form-control form-control-lg", @required = "required" })
+            </div>
+        </div>
+        <br />
+    </div>
+
+    <!-- Date inputs -->
+    <div class="row">
+        <!-- Start date input -->
+        <div class="col-md-6">
+            <div class="md-form form-group demo-section k-content">
+                <h6>Start date*</h6>
+                @Html.TextBoxFor(m => m.meeting.MeetingDate, new { @id = "datetimepicker", @class = "form-control", @title = "datetimepicker", @required = "required" })
+            </div>
+        </div>
+        <!-- Duration input -->
+        <div class="col-md-6">
+            <div class="md-form form-group">
+                <h6>Duration(Hours)*</h6>
+                @Html.TextBoxFor(m => m.meeting.MeetingDuration, new { @type = "number", @id = "durationInput", @class = "form-control", @min = "0", @step = "0.01", @placeholder = "Duration", @required = "required" })
+            </div>
+        </div>
+        <br />
+    </div>
+
+        <!-- More info -->
+    <div class="row">
+        <div class="col-md-12">
+            <a id="moreInfo" style="float:right" onclick="showMore()">
+                <span style="color:#4AB1E4;font-size:medium">More info</span>
+            </a>
+        </div>
+    </div>
+        <!-- Location inputs -->
+    <div id="more" class="row" style="display:none">
+        <!-- Company input -->
+        <div class="col-md-3">
+            <div class="md-form form-group">
+                <h6>Company</h6>
+                @Html.TextBoxFor(m => m.location.Company, new { @list = "companies", @class = "form-control", @placeholder = "Company" })
+                <datalist id="companies">
+                    @foreach (var item in Model.company)
+                    {
+                        <option value="@item" />
+                    }
+                </datalist>
+            </div>
+        </div>
+        <!-- Location name input -->
+        <div class="col-md-3">
+            <div class="md-form form-group">
+                <h6>Location name</h6>
+                @Html.TextBoxFor(m => m.location.Address, new { @list = "addresses", @class = "form-control", @placeholder = "Location name" })
+                <datalist id="addresses">
+                    @foreach (var item in Model.addresses)
+                    {
+                        <option value="@item" />
+                    }
+                </datalist>
+            </div>
+        </div>
+        <!-- Floor input -->
+        <div class="col-md-3">
+            <div class="md-form form-group">
+                <h6>Floor</h6>
+                @Html.TextBoxFor(m => m.location.Floor, new { @type = "number", @class = "form-control", @min = "0", @placeholder = "Floor" })
+            </div>
+        </div>
+        <!-- Room number input -->
+        <div class="col-md-3">
+            <div class="md-form form-group">
+                <h6>Room number</h6>
+                @Html.TextBoxFor(m => m.location.RoomNumber, new { @type = "number", @class = "form-control", @min = "1", @placeholder = "Room number" })
+            </div>
+        </div>
+        <br />
+    </div>
+
+        <!-- Participants inputs -->
+        <div class="row">
+            <!-- Leader input -->
+            <div class="col-md-12">
+                <div class="md-form form-group">
+                    <h6>Leader*</h6>
+                    @Html.TextBoxFor(m => m.UserEmail, new { @readonly = "readonly", @class = "form-control", @required = "required" })
+                </div>
+            </div>
+            <!-- Participant input -->
+            <div class="col-md-12">
+                <div class="md-form form-group">
+                    <h6>Participants*</h6>
+                    <div id="participant_container">
+                        <input type="text" id="userEmail">
+                        <ul id="participant"></ul>
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="card">
+            <div class="card-header" style="background-color:darkgray; height:70px;">
+                <h3 style="padding: 20px; ">Topic Time Prediction</h3>
+            </div>
+            <div style="padding:20px;" class="row">
+                <div class="col-md-7">
+                    <label>Enter Topic name: </label>
+                    <input style="border:none;border-bottom:1px solid #aaa; width:50%; margin:0 20px;" id="topicNameToPredict" />
+                    <div class="btn btn-default" style="font-size:11px;" onclick="RedirectToPrediction();" id="predictionBtn">Predict</div>
+                </div>
+                <div class="col-md-5" style="padding:10px;">
+                    <label>Predicted Time: </label>
+                    <label id="PredictedTopicTime"></label>
+                </div>
+
+            </div>
+        </div>
+        <!-- Agenda inputs -->
+        <div class="card">
+            <div class="card-header" style="background-color:darkgray; height:70px;">
+                <h3 style="padding: 20px; width:100px;">Agenda</h3>
+            </div>
+            <div class="row" style="background-color:#F0F0F0;margin:0">
+                <div class="col-md-4" style="font-weight:bold">
+                    <div class="md-form form-group">
+                        Topic Name
+                    </div>
+                </div>
+                <div class="col-md-4" style="font-weight:bold">
+                    <div class="md-form form-group">
+                        Topic Decription
+                    </div>
+                </div>
+                <div class="col-md-2" style="font-weight:bold">
+                    <div class="md-form form-group">
+                        Topic Time (Min.)
+                    </div>
+                </div>
+                <div class="col-md-2" style="font-weight:bold">
+                    <div class="md-form form-group">
+                        Topic Priority
+                    </div>
+                </div>
+            </div>
+            <ul id="agenda" class="list-group list-group-flush">
+                <li class="list-group-item 0">
+                    <!-- Topics inputs -->
+                    <div class="row">
+                        <!-- Topic name input -->
+                        <div class="col-md-4">
+                            <div class="md-form form-group">
+
+                                @Html.TextBoxFor(m => m.topics[0].TopicName, new { @class = "form-control", @placeholder = "Topic name*", @required = "required" })
+                            </div>
+                        </div>
+                        <!-- Topic decription input -->
+                        <div class="col-md-4">
+                            <div class="md-form form-group">
+                                @Html.TextBoxFor(m => m.topics[0].TopicDescription, new { @class = "form-control", @placeholder = "Topic decription" })
+                            </div>
+                        </div>
+                        <!-- Topic time input -->
+                        <div class="col-md-2">
+                            <div class="md-form form-group">
+                                @Html.TextBoxFor(m => m.topics[0].TopicTime, new { @type = "number", @class = "form-control topicTime", @min = "1", @placeholder = "Topic time(Min)" })
+                            </div>
+                        </div>
+                        <!-- Topic priority input -->
+                        <div class="col-md-2">
+                            <div class="md-form form-group">
+                                @Html.TextBoxFor(m => m.topics[0].TopicPriority, new { @list = "priorities", @class = "form-control", @placeholder = "Topic priority" })
+                                <datalist id="priorities">
+                                    <option value="Urgent" />
+                                    <option value="High" />
+                                    <option value="Medium" />
+                                    <option value="Low" />
+                                </datalist>
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                    <div class="row">
+                        <!-- Topic items input -->
+                        <div class="col-md-4">
+                            <div class="md-form form-group">
+                                @Html.TextBoxFor(m => m.topics[0].ListOfItems, new { @id = "textarea-char-counter", @class = "form-control md-textarea" })
+                                <label for="textarea-char-counter">Type your text</label>
+                            </div>
+                        </div>
+                        <!-- Topic input file -->
+                        <div class="col-md-4">
+                            <div class="md-form form-group">
+                                <div id="upload_button">
+                                    <label>
+                                        <input name="file" type="file" onchange="divFileCreation(this,1)" id="file1" />
+
+                                        @if (pathFile != "")
+                                        {
+                                            <input type="text" hidden="hidden" value="@pathFile" name="topics[0].FileLocation" class="@file_name" />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" hidden="hidden" value="@pathFile" name="topics[0].FileLocation" />
+                                        }
+                                        <span class="glyphicon glyphicon-paperclip" title="Attach File"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub topic button -->
+                        <div class="col-md-4">
+                            <div class="md-form form-group" style="font-size:24px; color:#0056B3">
+                                <a class="glyphicon glyphicon-plus-sign" style="margin-bottom:10px" onclick="addSub(this.parentNode.parentNode.parentNode.parentNode, 0)"></a>
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- Add topic button -->
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="add circle" style="margin-left:10px;" onclick="addTpc()"> <i class="fas fa-plus"></i></button>
+            </div>
+            <br />
+        </div>
+
+        <!-- Submit button -->
+        <div class="row">
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" id="submit-btn" class="btn btn-primary btn-lg" style="margin-left:100px;" name="submit" onclick="validateMyForm()">Submit</button>
+            </div>
+            <div class="col-md-4">
+            </div>
+            <br />
+        </div>
+}
+
+<script>
+    ////Voice commands
+    var recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    $(document).ready(function () {
+        recognition.onresult = function (event) {
+            console.log(event);
+            for (var i = 0; i < event.results.length; i++) {
+                if (event.results[i][0].transcript == "topic" || event.results[i][0].transcript == "toby" ||event.results[i][0].transcript == "tpic"  || event.results[i][0].transcript == "dunnock" || event.results[i][0].transcript == "phobic" || event.results[i][0].transcript == "tpic") {
+                    document.getElementById("addTopicBtn").click();
+                }
+                else if (event.results[i][0].transcript == "submit" || event.results[i][0].transcript == "submt") {
+                    document.getElementById("submit-btn").click();
+                }
+            }
+        }
+        recognition.start();
+    });
+    
+
+    //Prevent submitting when press enter
+    window.onkeypress = function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+        }
+    }
+
+    ////Start dateTime
+    $(document).ready(function () {
+        // create DateTimePicker from input HTML element
+        $("#datetimepicker").kendoDateTimePicker({
+            value: '@Model.meeting.MeetingDate',
+            dateInput: true
+        });
+    });
+
+    ////Location
+    function showMore() {
+        var more = document.getElementById("more");
+        var moreInfo = document.getElementById("moreInfo");
+        if (more.style.display == "none") {
+            more.style.display = "block";
+            moreInfo.firstElementChild.innerHTML = "Less info";
+        }
+        else {
+            more.style.display = "none";
+            moreInfo.firstElementChild.innerHTML = "More info";
+        }
+    }
+
+    ////Participants
+    var usersEmailArr = [], checkArr = [], flag = 0,
+		participantContainer = document.getElementById("participant_container"), userEmailInput = document.getElementById("userEmail"), participantList = document.getElementById("participant");
+
+    //handle cursor when press in any area in participant div
+    participantContainer.onclick = function () {
+        userEmailInput.focus();
+    }
+    //load all participants in usersEmailArr
+    @foreach (var user in Model.users)
+    {
+        @:usersEmailArr.push("@user.Email");
+    }
+    //add participant on keyup
+    userEmailInput.onkeyup = function (e) {
+        flag = 0;
+        if (e.keyCode == 13) {
+            for (var i = 0; i < usersEmailArr.length; i++) {
+                if (usersEmailArr[i] == userEmailInput.value && (userEmailInput.value != '@Model.UserEmail')) {
+                    flag = 1;
+                    break;
+                }
+            }
+            if (flag == 1 && !checkArr.includes(userEmailInput.value)) {
+                createParticipantLayout(userEmailInput.value);
+            }
+        }
+    }
+
+    //create Participant Layout function
+    function createParticipantLayout(Email) {
+        var li = document.createElement("li"),
+			link = document.createElement("a"),
+			span1 = document.createElement("span"),
+			span2 = document.createElement("span"),
+			value = document.createTextNode(Email);
+        link.setAttribute("href", "#");
+        link.setAttribute("id", "deleteParticipant");
+        span1.setAttribute("class", "glyphicon glyphicon-remove");
+        span1.setAttribute("onclick", "participantCheck(this.parentNode)");
+        link.appendChild(span1);
+
+        span2.appendChild(value);
+        li.appendChild(link);
+        li.appendChild(span2);
+
+        participantList.appendChild(li);
+
+        checkArr.push(Email);
+        userEmailInput.value = ""
+    }
+    //delete participant
+    var participantCheck = function (x) {
+        var v = x.parentNode.firstElementChild.nextElementSibling.textContent;
+        checkArr.splice(checkArr.indexOf(v), 1);
+
+        x.parentNode.remove();
+    }
+
+    //add previous participants
+    @for(var i=0;i<Model.UserMeeting.Count;i++)
+    {
+        @:createParticipantLayout('@Model.UserMeeting[i].Email');
+    }
+
+    ////Agenda
+    var topicId = [], subTopicId = [];
+
+    //add topic
+    var agenda = document.getElementById("agenda"), addTpcBtn = document.getElementById("addTopicBtn"), cnt = 1;
+
+    @for (var i = 1; i < Model.topics.Count; i++)
+    {
+        if (Model.topics[i].subTopicId != null)
+        {
+            for(var j = 0;j< Model.topics.Count;j++)
+            {
+                if(Model.topics[i].subTopicId == Model.topics[j].TopicID)
+                {
+                    @:var num = @j;
+                    @:var m = document.getElementsByClassName(num);
+                    @:addSub(m[0], @j);
+                    break;
+                }
+            }
+
+        }
+        else
+        {
+            @:addTpc();
+                            }
+        @:var Topic = document.getElementsByClassName(@i);
+                        @:Topic[1].setAttribute("value", "@Model.topics[i].TopicName");
+
+        @:Topic[2].setAttribute("value", "@Model.topics[i].TopicDescription");
+
+        @:Topic[3].setAttribute("value", "@Model.topics[i].TopicTime");
+
+        @:Topic[4].setAttribute("value", "@Model.topics[i].TopicPriority");
+
+        @:Topic[5].setAttribute("value", "@Model.topics[i].ListOfItems");
+
+        string s = "";
+        @:var y = document.createElement("input");
+            @:y.setAttribute("type", "text");
+
+            @:y.setAttribute("hidden", "hidden");
+            @:y.setAttribute("value", "@s");
+            @:Topic[6].appendChild(y);
+            if (Model.topics[i].FileLocation != null)
+        {
+            string file_path = Model.topics[i].FileLocation;
+            string[] name = file_path.Split('\\');
+            string file_name = name[name.Count() - 1];
+
+            for(var j=0;j<name.Length;j++)
+            {
+                s += name[j];
+                if(j != name.Length-1)
+                {
+                    s += "+";
+                }
+            }
+
+            @:divFileCreation("@file_name", Topic[6]);
+                @:y.setAttribute("value", "@s");
+
+        }
+
+
+    }
+
+    function addTpc() {
+
+        var newLi = document.createElement("li");
+        newLi.setAttribute("class", "list-group-item");
+        newLi.classList.add(cnt);
+        var newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        var col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        var formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcName = document.createElement("input");
+        tpcName.setAttribute("type", "text");
+        tpcName.setAttribute("name", "topics[" + cnt + "].TopicName");
+
+        tpcName.setAttribute("class", "form-control");
+        tpcName.setAttribute("placeholder", "Topic name*");
+        tpcName.setAttribute("required", "required");
+        tpcName.classList.add(cnt);
+        formGroup.appendChild(tpcName);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcDsc = document.createElement("input");
+        tpcDsc.setAttribute("type", "text");
+        tpcDsc.setAttribute("name", "topics[" + cnt + "].TopicDescription");
+        tpcDsc.setAttribute("class", "form-control");
+        tpcDsc.setAttribute("placeholder", "Topic description");
+        tpcDsc.classList.add(cnt);
+        formGroup.appendChild(tpcDsc);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        var col2 = document.createElement("div");
+        col2.setAttribute("class", "col-md-2");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcTime = document.createElement("input");
+        tpcTime.setAttribute("type", "number");
+        tpcTime.setAttribute("name", "topics[" + cnt + "].TopicTime");
+        tpcTime.setAttribute("class", "form-control topicTime");
+        tpcTime.setAttribute("min", "1");
+        tpcTime.setAttribute("placeholder", "Topic time(Min)");
+        tpcTime.classList.add(cnt);
+        formGroup.appendChild(tpcTime);
+        col2.appendChild(formGroup);
+        newRow.appendChild(col2);
+
+        col2 = document.createElement("div");
+        col2.setAttribute("class", "col-md-2");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcPriority = document.createElement("input");
+        tpcPriority.setAttribute("type", "text");
+        tpcPriority.setAttribute("name", "topics[" + cnt + "].TopicPriority");
+        tpcPriority.setAttribute("list", "priorities");
+        tpcPriority.setAttribute("class", "form-control");
+        tpcPriority.setAttribute("placeholder", "Topic priority");
+        tpcPriority.classList.add(cnt);
+        formGroup.appendChild(tpcPriority);
+        col2.appendChild(formGroup);
+        newRow.appendChild(col2);
+
+        var br = document.createElement("br");
+        newRow.appendChild(br);
+        newLi.appendChild(newRow);
+
+        newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcList = document.createElement("input");
+        tpcList.setAttribute("type", "text");
+        tpcList.setAttribute("id", "textarea-char-counter-" + cnt);
+        tpcList.setAttribute("name", "topics[" + cnt + "].ListOfItems");
+        tpcList.setAttribute("class", "form-control md-textarea");
+        tpcList.classList.add(cnt);
+        var tpcListLabel = document.createElement("label");
+        tpcListLabel.setAttribute("for", "textarea-char-counter-" + cnt);
+        tpcListLabel.innerHTML = "Type your text";
+        formGroup.appendChild(tpcList);
+        formGroup.appendChild(tpcListLabel);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcFile = document.createElement("input"),
+            upload_file = document.createElement("div"),
+            label = document.createElement("label"),
+            span = document.createElement("span");
+
+        tpcFile.setAttribute("name", "file");
+        tpcFile.setAttribute("type", "file");
+        tpcFile.setAttribute("onchange", "divFileCreation(this,1)");
+        tpcFile.classList.add(cnt);
+
+        upload_file.setAttribute("id", "upload_button");
+        span.setAttribute("class", "glyphicon glyphicon-paperclip");
+        span.setAttribute("title", "Attach File");
+        label.appendChild(tpcFile);
+        label.appendChild(span);
+        upload_file.appendChild(label);
+        formGroup.appendChild(upload_file);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+        formGroup.setAttribute("style", "font-size:24px;color:#0056B3");
+
+        var subBtn = document.createElement("a");
+        subBtn.setAttribute("class", "glyphicon glyphicon-plus-sign");
+        subBtn.setAttribute("style", "margin-bottom:10px");
+        subBtn.classList.add(cnt);
+        subBtn.setAttribute("onclick", "addSub(this.parentNode.parentNode.parentNode.parentNode, this.classList[2])");
+        var delIcon = document.createElement("span");
+        delIcon.setAttribute("class", "glyphicon glyphicon-trash");
+        delIcon.setAttribute("style", "float:right;margin-right:30px");
+        delIcon.classList.add(cnt);
+        delIcon.setAttribute("onclick", "DeleteTopic(this.parentNode.parentNode.parentNode.parentNode, this.classList[2])");
+        formGroup.appendChild(subBtn);
+
+        var tpcid = document.createElement("input");
+        tpcid.setAttribute("type", Text);
+        tpcid.setAttribute("hidden", "hidden");
+        tpcid.setAttribute("name", "topics[" + cnt + "].TopicID");
+        tpcid.classList.add(cnt);
+        label.appendChild(tpcid);
+        formGroup.appendChild(tpcid);
+
+        formGroup.appendChild(delIcon);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newRow.appendChild(br);
+        newLi.appendChild(newRow);
+
+        agenda.appendChild(newLi);
+
+        topicId.push(cnt);
+        subTopicId.push(0);
+
+        cnt++;
+
+    }
+    //add sub topic
+    function addSub(x, c) {
+        var newLi = document.createElement("li");
+        newLi.setAttribute("class", "list-group-item");
+        newLi.classList.add(cnt);
+        var newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        var col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        var formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcName = document.createElement("input");
+        tpcName.setAttribute("type", "text");
+        tpcName.setAttribute("name", "topics[" + cnt + "].TopicName");
+
+        tpcName.setAttribute("class", "form-control");
+        tpcName.setAttribute("placeholder", "Topic name*");
+        tpcName.setAttribute("required", "required");
+        tpcName.classList.add(cnt);
+        formGroup.appendChild(tpcName);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcDsc = document.createElement("input");
+        tpcDsc.setAttribute("type", "text");
+        tpcDsc.setAttribute("name", "topics[" + cnt + "].TopicDescription");
+        tpcDsc.setAttribute("class", "form-control");
+        tpcDsc.setAttribute("placeholder", "Topic description");
+        tpcDsc.classList.add(cnt);
+        formGroup.appendChild(tpcDsc);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        var col2 = document.createElement("div");
+        col2.setAttribute("class", "col-md-2");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcTime = document.createElement("input");
+        tpcTime.setAttribute("type", "number");
+        tpcTime.setAttribute("name", "topics[" + cnt + "].TopicTime");
+        tpcTime.setAttribute("class", "form-control");
+        tpcTime.setAttribute("min", "1");
+        tpcTime.setAttribute("placeholder", "Topic time(Min)");
+        tpcTime.classList.add(cnt);
+        formGroup.appendChild(tpcTime);
+        col2.appendChild(formGroup);
+        newRow.appendChild(col2);
+
+        col2 = document.createElement("div");
+        col2.setAttribute("class", "col-md-2");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcPriority = document.createElement("input");
+        tpcPriority.setAttribute("type", "text");
+        tpcPriority.setAttribute("name", "topics[" + cnt + "].TopicPriority");
+        tpcPriority.setAttribute("list", "priorities");
+        tpcPriority.setAttribute("class", "form-control");
+        tpcPriority.setAttribute("placeholder", "Topic priority");
+        tpcPriority.classList.add(cnt);
+        formGroup.appendChild(tpcPriority);
+        col2.appendChild(formGroup);
+        newRow.appendChild(col2);
+
+        var br = document.createElement("br");
+        newRow.appendChild(br);
+        newLi.appendChild(newRow);
+
+        newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcList = document.createElement("input");
+        tpcList.setAttribute("type", "text");
+        tpcList.setAttribute("id", "textarea-char-counter-" + cnt);
+        tpcList.setAttribute("name", "topics[" + cnt + "].ListOfItems");
+        tpcList.setAttribute("class", "form-control md-textarea");
+        tpcList.classList.add(cnt);
+        var tpcListLabel = document.createElement("label");
+        tpcListLabel.setAttribute("for", "textarea-char-counter-" + cnt);
+        tpcListLabel.innerHTML = "Type your text";
+        formGroup.appendChild(tpcList);
+        formGroup.appendChild(tpcListLabel);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        var tpcFile = document.createElement("input"),
+            upload_file = document.createElement("div"),
+            label = document.createElement("label"),
+            span = document.createElement("span");
+
+        tpcFile.setAttribute("name", "file");
+        tpcFile.setAttribute("type", "file");
+        tpcFile.setAttribute("onchange", "divFileCreation(this,1)");
+        tpcFile.classList.add(cnt);
+        upload_file.setAttribute("id", "upload_button");
+        span.setAttribute("class", "glyphicon glyphicon-paperclip");
+        span.setAttribute("title", "Attach File");
+        label.appendChild(tpcFile);
+
+
+
+        label.appendChild(span);
+        upload_file.appendChild(label);
+        formGroup.appendChild(upload_file);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+        formGroup.setAttribute("style", "font-size:24px;color:#0056B3");
+
+        var subBtn = document.createElement("a");
+        subBtn.setAttribute("class", "glyphicon glyphicon-plus-sign");
+        subBtn.setAttribute("style", "margin-bottom:10px");
+        subBtn.classList.add(cnt);
+        subBtn.setAttribute("onclick", "addSub(this.parentNode.parentNode.parentNode.parentNode, this.classList[2])");
+        var hiddenSubInput = document.createElement("input");
+        hiddenSubInput.setAttribute("type", "hidden");
+        hiddenSubInput.setAttribute("value", c);
+        hiddenSubInput.setAttribute("name", "topics[" + cnt + "].subTopicId");
+        hiddenSubInput.setAttribute("class", cnt);
+        var delIcon = document.createElement("span");
+        delIcon.setAttribute("class", "glyphicon glyphicon-trash");
+        delIcon.setAttribute("style", "float:right;margin-right:30px");
+        delIcon.classList.add(cnt);
+        delIcon.setAttribute("onclick", "DeleteTopic(this.parentNode.parentNode.parentNode.parentNode, this.classList[2])");
+        formGroup.appendChild(subBtn);
+
+        formGroup.appendChild(hiddenSubInput);
+
+        formGroup.appendChild(delIcon);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newRow.appendChild(br);
+        newLi.appendChild(newRow);
+
+        x.appendChild(newLi);
+
+        topicId.push(cnt);
+        subTopicId.push(1);
+
+        cnt++;
+    }
+    function DeleteTopic(x, coun) {
+        var zx = document.getElementsByClassName(coun),
+	        li_len = x.getElementsByTagName("li"),
+	        li_count = li_len.length + 1;
+        subTopicId.splice(topicId.indexOf(parseInt(coun)), li_count);
+        topicId.splice(topicId.indexOf(parseInt(coun)), li_count);
+        x.remove();
+    }
+
+    ////Submit button
+
+    //alert if the topics time counter exceeds the meeting duration
+    document.getElementById("submit-btn").addEventListener("click", function (event) {
+
+        var durationInput = document.getElementById("durationInput"), topicTime = document.getElementsByClassName("topicTime"), cnt = 0;
+
+        for (var i = 0; i < topicTime.length; i++) {
+            cnt += parseInt(topicTime[i].value);
+        }
+        if (cnt > (durationInput.value * 60)) {
+            swal("Whoops...", "Time Overrun")
+            event.preventDefault()
+        }
+
+        if (checkArr.length == 0) {
+            swal("Whoops...", "Please enter at least one participant")
+            event.preventDefault()
+        }
+
+    });
+
+    function validateMyForm() {
+
+        //send participants to the controller
+        for (var i = 0; i < checkArr.length; i++) {
+            var hiddenInput = document.createElement("input");
+            hiddenInput.setAttribute("type", "hidden");
+            hiddenInput.setAttribute("name", "UserMeeting[" + i + "].Email");
+            hiddenInput.setAttribute("value", checkArr[i]);
+            userEmailInput.appendChild(hiddenInput);
+        }
+
+        //modify topics order before submit
+        for (var i = 0; i < topicId.length; i++) {
+
+            var Topic = document.getElementsByClassName(topicId[i]),
+	             j = i + 1;
+            Topic[1].setAttribute("name", "topics[" + j + "].TopicName");
+
+            Topic[2].setAttribute("name", "topics[" + j + "].TopicDescription");
+
+            Topic[3].setAttribute("name", "topics[" + j + "].TopicTime");
+
+            Topic[4].setAttribute("name", "topics[" + j + "].TopicPriority");
+
+            Topic[5].setAttribute("name", "topics[" + j + "].ListOfItems");
+
+            Topic[6].setAttribute("name", "topics[" + j + "].FileLocation");
+
+            if (Topic[6].childNodes.length != 0) {
+
+                Topic[6].firstElementChild.setAttribute("name", "topics[" + j + "].FileLocation");
+            }
+
+
+            if (subTopicId[i] != 0) {
+                Topic[8].setAttribute("name", "topics[" + j + "].subTopicId");
+                var val = topicId.indexOf(parseInt(Topic[8].value));
+                val = val + 1;
+                Topic[8].setAttribute("value", val);
+
+            }
+        }
+    }
+    function removeFile(file) {
+
+        file.previousElementSibling.removeAttribute("hidden");
+        file.previousElementSibling.firstElementChild.firstElementChild.firstElementChild.value = "";
+        if (file.previousElementSibling.firstElementChild.firstElementChild.firstElementChild.id == "file1") {
+            file.previousElementSibling.firstElementChild.firstElementChild.firstElementChild.nextElementSibling.value = "";
+        }
+        else if(file.previousElementSibling.firstElementChild.firstElementChild.firstElementChild.firstElementChild != null) {
+            file.previousElementSibling.firstElementChild.firstElementChild.firstElementChild.firstElementChild.value = "";//hidden input file location
+
+        }
+        file.remove();
+    }
+    function divFileCreation(path, flag) {
+
+        var file_name = "";
+        if (flag != 1) {
+            file_name = path;
+            path = flag;
+        }
+        else {
+            var file_path = path.value,
+            name = file_path.split('\\');
+            file_name = name[name.length - 1];
+        }
+
+        var div = document.createElement("div"),
+            div_file_name = document.createElement("div"),
+            span = document.createElement("span");
+        div.setAttribute("class", "file_div glyphicon glyphicon-download-alt");
+        div.setAttribute("style", "margin-top:11px;color:#0056B3");
+        span.setAttribute("class", "glyphicon glyphicon-remove");
+        span.setAttribute("onclick", "removeFile(this.parentNode)");
+        span.setAttribute("style", "margin-left:6px")
+        div_file_name.appendChild(document.createTextNode(file_name));
+        div.appendChild(div_file_name);
+        div.appendChild(span);
+        path.parentNode.parentNode.parentNode.setAttribute("hidden", "hidden");
+        path.parentNode.parentNode.parentNode.parentNode.appendChild(div);
+
+
+    }
+    var file_topic0 = document.getElementById("file1").nextElementSibling;
+    if (file_topic0.className != "") {
+        divFileCreation(file_topic0.className, file_topic0.previousElementSibling);
+    }
+    $("#predictionBtn").click(function () {
+        $("#PredictedTopicTime").text("");
+        var ordrid = $("#topicNameToPredict").val();
+        var Surl = "/Prediction/Index?ID=" + ordrid;
+        $.ajax({
+            type: "Get",
+            url: Surl,
+            success: function (d) {
+                var obj2 = JSON.parse(d);
+                
+                $("#PredictedTopicTime").text(obj2 + " min.");
+        
+            },
+            error: function (d) {
+                sweetAlert("Can not predict topic time", "There are no similar topics", "warning");
+
+            }
+        })
+    }
+    )
+</script>

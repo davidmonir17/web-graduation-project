@@ -1,0 +1,67 @@
+﻿@using MeetingMinutesGP.Models
+@model  UsersWithUser
+@{
+    ViewBag.Title = "All_Users";
+    int counter = 1;
+}
+<style>
+      .header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 97.5%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+</style>
+<div class="col-sm-12 header" align="center"><strong>Available Users</strong></div>
+<table class="table table-striped w-auto">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>  Name     </th>
+            <th>  Company  </th>
+            <th>  Position </th>
+            <th>  Follow/Unfollow   </th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.RestOfUsers.Count; i++)
+        {
+            <tr class="table-info">
+                @Html.HiddenFor(model => model.RestOfUsers[i].UserID)
+                <th scope="row">@counter</th>
+                <td>
+                    @{
+                        counter++;
+                        byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Model.RestOfUsers[i].UserID.ToString());
+                        string encyptedID = Convert.ToBase64String(encoded);
+                        @Html.ActionLink(Model.RestOfUsers[i].Name, "PublicPostsForFollower", "Post", new { id = encyptedID }, null)
+
+                    }
+                </td>
+                <td>@Model.RestOfUsers[i].Company</td>
+                <td>@Model.RestOfUsers[i].Position</td>
+                @if (@Model.FollowerNotFollower.ElementAt(i) == "Follower")
+                {
+                    <td>
+                        @Html.ActionLink(" Unfollow", "Unfollow_User", "Follow", new {id = Model.RestOfUsers[i].UserID }, new { @class ="glyphicon glyphicon-user"}) 
+                    </td>
+                }
+                @if (@Model.FollowerNotFollower.ElementAt(i) == "Not Follower")
+                {
+                    <td>
+                        @Html.ActionLink(" Follow", "Follow_User", "Follow", new {id = Model.RestOfUsers[i].UserID }, new { @class = "glyphicon glyphicon-user" })
+                    </td>
+                }
+                
+            </tr>
+        }
+    </tbody>
+
+</table>
+

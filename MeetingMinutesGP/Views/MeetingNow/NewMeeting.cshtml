@@ -1,0 +1,274 @@
+﻿@using MeetingMinutesGP.Models;
+@model List<UserMeeting>
+@{
+    ViewBag.Title = "NewMeeting";
+    DateTime today = DateTime.Today;
+    GPEntities db = new GPEntities();
+    List<User> ParticipantsList = new List<User>();
+    for (int i = 0; i <Model.Count; i++)
+    {
+        User Participant = new User();
+        int user_id = Model[i].userID;
+        Participant = db.Users.Where(a => a.UserID == user_id).FirstOrDefault();
+        ParticipantsList.Add(Participant);
+    }
+}
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+    .header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 102%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+    .popupheader{
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 97%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+     .Popbtn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        margin:8px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+      .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+    .cbl{
+        background-color: gray;
+        color:white;
+        font-weight: bold;
+        font-size:20px;
+    }
+    .cba{
+        background-color: #1cc3b2;
+        color:white;
+        font-weight: bold;
+        font-size:20px;
+        margin:10px;
+        float:left;
+    }
+     .cbr{
+        background-color: red;
+        color:white;
+        font-weight: bold;
+        font-size:20px;
+        float:left;
+    }
+     .close_met{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+     }
+     #upload_button {
+     display: inline-block;
+      }
+     #upload_button input[type=file] {
+     display:none;
+      }
+     #btAdd{
+         float:right;
+     }
+     #inp{
+         grid-rows:50;
+         overflow:visible;
+     }
+    .h:focus {
+        border-color: #1cc3b2;
+    }
+    .clsm{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+        left:35%
+    }
+</style>
+<div class="col-sm-12 header" align="center"><strong>Meeting Activities @today</strong></div>
+<div class="col-sm-12 header"align="center"><strong>Please Check Attendence First To Make Your Data Saved</strong></div>
+@{ 
+    int x = 1;
+    byte[] encoded = System.Text.Encoding.UTF8.GetBytes(x.ToString());
+    string encyptedOption = Convert.ToBase64String(encoded);
+}
+<div class="col-sm-12" style="margin:30px;padding:10px;box-shadow: 3px 3px 8px 10px #888888;height:100px;">
+    <div class="col-sm-10">
+      <button type="button" class="btn glyphicon glyphicon-tasks" title="Tasks" onclick="RedirectToCalendar();" style="padding:10px;margin:10px;float:left;width:111.5px;height:42px;" ></button>
+    </div>
+    <div class="col-sm-2">
+    <!-- Button trigger modal -->
+       <button style="float:right;width:140px;height:42px;margin:10px;padding:10px;" type="button" class="btn" id="addbtn" data-toggle="modal" data-target="#exampleModalCenter" title="Attendence"> <i class="glyphicon glyphicon-user"></i></button>
+    </div>
+</div>
+<div>
+
+</div>
+<!--Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <br>
+                <h3 class="modal-title popupheader" id="exampleModalLongTitle"><strong>Attendence Sheet</strong></h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (@Html.BeginForm("SaveChanges", "Attendence"))
+            {
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Attended</th>
+                        </thead>
+                        <tbody>
+                            @{for (int i = 0; i < Model.Count; i++)
+                               {
+                                    <tr>
+                                        <td>@ParticipantsList[i].Name</td>
+                                        <td>@ParticipantsList[i].Email</td>
+                                        <td>@Html.CheckBoxFor(m => m[i].Attended)</td>
+                                        @Html.HiddenFor(m => m[i].userID)
+                                        @Html.HiddenFor(m => m[i].meetingID)
+                                        @Html.HiddenFor(m => m[i].AssignedTask)
+                                        @Html.HiddenFor(m => m[i].TaskStartDate)
+                                        @Html.HiddenFor(m => m[i].TaskEndDate)
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="Popbtn">Save changes</button>
+                    <button type="button" class="Popbtn" data-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div>
+    <form method="post" action="CreateMeeting" enctype="multipart/form-data">
+        <div class="col-sm-12" style="margin:30px;padding:10px;box-shadow: 3px 3px 8px 10px #888888;height:120px;">
+            <h3>Agenda Title</h3>
+            <input type="text" name="txtAgendaTitle" class="h form-control" placeholder="My Agenada Title"required/>
+        </div>
+        <div class="col-sm-12" style="padding:10px;margin:30px;box-shadow: 3px 3px 8px 10px #888888;">
+            <h3>Add Reference Link</h3>
+            <div id="pop0" class="popup">
+                <input type="button" class="w3-btn w3-circle cbl" onclick="AddLink();"value="+"title="Add Link"/>
+            </div>
+            <div class="popuptext hidden" id="myPopup">
+                <br>
+                <label></label><strong>Link Name </strong><input type="text" name="txtLinkName" placeholder="Name" class="h form-control" required/><br><br>
+                <label></label><strong>HTTP Link  </strong><input type="text" name="txtLink" placeholder="http:/www..." class="h form-control"required/><br>
+            </div>
+        </div>
+        <div id="InnerDiv">
+            <div class="col-sm-12" style="padding:10px;margin:30px;box-shadow: 3px 3px 8px 10px #888888;height:300px;">
+                <input id="btAdd" type="button" class="w3-btn w3-circle cba" value="+" title="Add Topic" />
+                <span style="font-size:x-large">Topic Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <input  id="inp" type="text" name="TxtForTpic" width="2000" placeholder="Name" class="h form-control" required/><br>
+                <span style="font-size:x-large">Topic Decription</span>
+                <input type="text" name="TxtForTpicDescription" width="2000" placeholder="Details" class="h form-control"required/><br>
+                <span style="font-size:x-large">Sub-Topics</span>
+                <input type="text" name="TxtForTpicSubToics" width="2000" placeholder="Subtoics Separated by -" class="h form-control" />
+                <div id="upload_button" class="col-sm-1">
+                    <label>
+                        <input name="file" type="file"ngf-select ng-model="new_files" ng-change="fs.uploadFiles(new_files)" multiple>
+                        <span class="glyphicon glyphicon-paperclip" title="Attach File"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div>
+            <button type="submit" class="glyphicon glyphicon-saved clsm" id="addbtn"> Close</button>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function() {
+        var iCnt = 0;
+        $('#btAdd').click(function() {
+                iCnt = iCnt + 1;
+                $('#InnerDiv').append('<div class="col-sm-12" style="padding:10px;margin:30px;box-shadow: 3px 3px 8px 10px #888888;height:300px;"><input id="btAdd" type="button" class="w3-btn w3-circle cbr" onclick="RemoveTextBox(this);" title="Remove Topic" value="x"/><span style="font-size:x-large">Topic Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="text" name="TxtForTpic" width="2000" placeholder="Name"class="h form-control"required/><br><span style="font-size:x-large">Topic Decription </span><input type="text" name="TxtForTpicDescription" width="2000" placeholder="Details" class="h form-control"required/><br><span> </span><span style="font-size:x-large">Sub-Topics</span><input type="text" name="TxtForTpicSubToics" width="2000" placeholder="Subtoics Separated by -" class="h form-control" /><div id="upload_button" class="col-sm-1"><label><input name="file" type="file"ngf-select ng-model="new_files" ng-change="fs.uploadFiles(new_files)" multiple><span title="Attach File" class="glyphicon glyphicon-paperclip"></span></label></div></div>');
+
+        });
+
+    });
+    function changeValue() {
+        document.getElementById("demo0").innerHTML = ++value;
+    }
+
+    var timerInterval = null;
+    function start() {
+        stop();
+        value = 0;
+        timerInterval = setInterval(changeValue, 1000);
+    }
+    var stop = function () {
+        clearInterval(timerInterval);
+    }
+    function RemoveTextBox(div) {
+        document.getElementById("InnerDiv").removeChild(div.parentNode);
+    }
+    function AddLink() {
+        var popup = document.getElementById("myPopup");
+        popup.classList.toggle("hidden");
+    }
+    function RedirectToCalendar() {
+        location.href = '@Url.Action("Index", "Calendar", new { id = encyptedOption })';
+    }
+    
+</script>
+

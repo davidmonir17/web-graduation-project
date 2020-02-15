@@ -1,0 +1,5 @@
+processor: Intel(R) Core(TM) i7-3632QM CPU @ 2.20GHz (8 CPUs), ~2.2GHz
+Installed memory (RAM): 8 GB
+System type: 64-bit Operating System, x64-based processor
+Pen and Touch: No pen or touch input is available for this display
+System Manufacturer: HP

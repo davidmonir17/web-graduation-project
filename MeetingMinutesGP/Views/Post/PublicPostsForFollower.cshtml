@@ -1,0 +1,78 @@
+﻿@using MeetingMinutesGP.Models
+@model UserPost
+
+@{
+    ViewBag.Title = "PublicPostsForFollower";
+}
+<style>
+        .header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 98%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+    .noAnouncement{
+        font-size: 20px;
+        font-weight: bold;
+        text-align:left;
+        word-wrap: break-word;
+       
+    }
+     .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+     .back{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+        left:5%
+   }
+</style>
+<div class="col-sm-12 header"><strong>Announcements of @Model.user_name.Name</strong></div>
+<div class="col-sm-2">
+    <button type="button" class="btn glyphicon glyphicon-arrow-left back" title="Back To Users" onclick="RedirectToUsersPage();" style="padding:10px;margin:10px;float:left;width:111.5px;height:42px;"></button>
+</div>
+<br><br>
+@if(Model.user_posts.Count!=0){ 
+foreach (var pos in Model.user_posts)
+{
+    <div align="center" style="margin:30px;padding:10px;box-shadow: 9px 10px 8px 10px #888888;"class="noAnouncement">
+        @pos.PostContent
+    </div>
+}
+}
+else
+{
+    <div align="center" style="margin:30px;padding:10px;box-shadow: 9px 10px 8px 10px #888888;"class="noAnouncement">
+        Sorry There NO Announcements From @Model.user_name.Name
+    </div>
+}
+<script>
+    function RedirectToUsersPage() {
+        location.href = '@Url.Action("All_Users", "Follow")';
+    }
+</script>
+ 

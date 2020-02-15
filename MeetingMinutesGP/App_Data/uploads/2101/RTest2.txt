@@ -1,0 +1,49 @@
+par(mfrow=c(2,2),bg="black")
+hist(chickwts$weight,main="Weight Gain",xlab="Weight Gain",ylab="Frequency of weights",col="blue")
+boxplot(chickwts$weight,PlantGrowth$weight,main="Weight Gain",ylab="Weight Gain(ibs)",ylim=c(0,500),names=c(1,2))
+d<-read.csv("C:\\Users\\Hussein Ata\\Desktop\\bank_load.csv")
+f.d<-d[d$gender=="FEMALE",]
+m.d<-d[d$gender=="MALE",]
+plot(density(d$age,d$children),main="Weight VS Weight",xlab="Xlab",ylab="Ylab",pch=2,type="l",col.lab="red",col.main="blue",col.axis="green",col="red")
+lines(PlantGrowth$weight,PlantGrowth$weight,lty=2,lwd=5)
+legend(-60,3,c('first','second'),lty=c(1,2))
+hist(chickwts$weight,main="Weight Gain",xlab="Weight Gain",ylab="Frequency of weights",col="blue")
+
+
+par(mfrow=c(1,1),bg="white")
+x1<-rnorm(100)
+x2<-rnorm(100)
+boxplot(x1,x2,names=c("x1","x2"))
+
+hist(chickwts$weight,xlab="X-Variable",ylab="Denisty",main="Denisty Curve Over Histogram",breaks=20,density=20)
+lines(density(chickwts$weight),col="blue")
+rug(log10(chickwts$weight))
+summary(ChickWeight$weight)
+
+dotchart(d$age,main="Miles per gallon",lebels=row.names(d))
+data(d)  
+head(d)
+barplot(VADeaths,col=rainbow(5),legend=TRUE,beside=TRUE)
+
+x1<-rnorm(100)
+par(mfrow=c(1,1))
+plot(x1,main="Type of point",type="p",xlab="X",ylab="Y",cex.axis=5)
+plot(x1,main="Type of line",type="l",xlab="X",ylab="Y")
+plot(x1,main="Type of both",type="b",xlab="X",ylab="Y")
+plot(x1,main="Type of overlab",type="o",xlab="X",ylab="Y")
+plot(x1,main="Type of hist",type="h",xlab="X",ylab="Y")
+plot(x1,main="Type of s",type="s",xlab="X",ylab="Y")
+
+
+
+plot(d$age,d$children,xlab="",ylab="")
+mtext("This is first",side =1,line=3)
+mtext("The second variable",side=2,line=3)
+mtext("Plotting the expression",line=3,side=3)
+mtext(expression(y==sum(i,1,x,i)),side=3,line=0)
+
+
+
+hist(chickwts$weight,main="Weight Gain",xlab="Weight Gain",ylab="Frequency of weights",col="blue",ylim=c(0,20))
+rect(350,0,450,15,border="red",lwd=3)
+text(400,18,"At Risk")

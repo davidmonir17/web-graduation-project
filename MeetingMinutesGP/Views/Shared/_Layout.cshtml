@@ -1,0 +1,852 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+
+    @*<link rel="stylesheet" href="~/Content/style.css">*@
+    @*@Scripts.Render("~/Content/TemplateFiles/js/jquery.min.js")*@
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 0;
+            padding-bottom: 0;
+            font-family: "Poppins", sans-serif;
+        }
+        body a:hover{
+            text-decoration:none;
+        }
+        a:hover{
+            cursor:pointer;
+        }
+        #topHeader {
+            background: #0e2737;
+            display: block;
+            min-height: 50px;
+            line-height: 50px;
+            color: #fff;
+            font-family: "Poppins", sans-serif;
+            float: none;
+            margin-top: 0;
+        }
+
+            #topHeader span {
+                color: #18bcaa;
+                font-weight: bold;
+            }
+
+        .navbar {
+            border-radius: 0;
+            border: none;
+            font-size: 16px;
+            font-weight: 400;
+            min-height: 55px;
+            background: #fff;
+            -webkit-box-shadow: 0 8px 6px -6px #444343;
+            -moz-box-shadow: 0 8px 6px -6px #444343;
+            box-shadow: 0 8px 6px -6px #444343;
+        }
+
+        .nav li a {
+            line-height: 55px;
+            color: #2a303b !important;
+            font-weight: bold;
+        }
+
+        #divNotificaion li a {
+            line-height: normal;
+        }
+
+        .navbar-header a img {
+            height: 55px;
+            margin-top: 5px;
+            /*margin-right: 200px;*/
+        }
+
+        .navbar-toggle {
+            background: #2a303b !important;
+        }
+
+        #headerLinks a {
+            margin-right: 24px;
+            transition:color .5s;
+        }
+        #headerLinks a:hover{
+            color:#ccc !important;
+            
+            
+        }
+        .loginformdiv {
+            float: right;
+        }
+
+        #loginLink {
+            background: #18bcaa;
+            width: 150px;
+            color: #fff !important;
+            text-align: center;
+        }
+
+        .logininfo {
+            float: none;
+        }
+
+        #ntificationContainer {
+        }
+
+        .notification-icon {
+            display: block;
+            position: absolute;
+            top: 3px;
+            left: 180%;
+        }
+
+        @@media only screen and (max-width: 767px) {
+            .notification-icon {
+                display: block;
+                position: absolute;
+                top: -4px !important;
+                left: 50%;
+            }
+        }
+
+        @@media only screen and (min-width: 975px) and (max-width: 1182px) {
+        }
+
+        .classy-nav-container .classy-navbar .notification-icon {
+            display: block;
+            position: absolute;
+            left: 50%;
+        }
+
+        }
+
+        .notifications {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+            .notifications #bellIcon {
+                color: #808080;
+                line-height: 75px;
+                font-size: 20px;
+                cursor: pointer;
+            }
+
+            .notifications .num {
+                position: absolute;
+                top: 17px;
+                left: 10px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #1cc3b2;
+                color: #fff;
+                line-height: 20px;
+                text-align: center;
+                font-size: 14px;
+            }
+
+        ul#divNotificaion {
+            position: absolute;
+            left: -75px;
+            top: 60px;
+            margin-top: 10px;
+            width: 220px;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,.5);
+            padding: 0px;
+            box-sizing: border-box;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            text-align: left;
+            max-height: 300px;
+            overflow: auto;
+            word-wrap: break-word;
+        }
+
+            ul#divNotificaion li {
+                display: block;
+                padding: 8px;
+                list-style: none;
+                position: relative;
+                margin-bottom: 5px;
+                border-bottom: 1px solid rgba(0,0,0,.1);
+                cursor: pointer;
+            }
+
+                ul#divNotificaion li:last-child {
+                    border-bottom: none;
+                }
+
+                ul#divNotificaion li a {
+                    text-decoration: none;
+                    font-size: 14px;
+                    /*display:inline-block;*/
+                }
+
+                ul#divNotificaion li:hover a {
+                    color: #1cc3b2;
+                }
+
+        footer{
+            color: #fff;
+            /*height: 300px;*/
+            background-color: #0e2737;
+            padding-top: 70px;
+            padding-bottom:10px;
+        }
+        footer .single-footer-widget .phone{
+            color: #1cc3b2;
+            line-height:1.3;
+            font-weight:600;
+            font-size:22px;
+            margin-top:30px;
+        }
+        footer .single-footer-widget .email, footer .single-footer-widget .address{
+            color: #afb4bf;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        footer .single-footer-widget .widget-title{
+            line-height:1.3;
+            font-weight:600;
+            font-size:22px;
+            margin-top:20px;
+             margin-bottom:20px;
+        }
+         footer .single-footer-widget ul{
+             list-style: none;
+             padding-left:0;
+         }
+         footer .single-footer-widget ul li{
+             
+             margin:5px 0;
+              color: #afb4bf;
+         }
+         footer .single-footer-widget .footer-nav li{
+             
+             margin:12px 0;
+              
+         }
+         footer .single-footer-widget .footer-nav li a{
+             
+              color: #636a76;
+              
+         }
+         footer .single-footer-widget .footer-nav li:hover a{
+             
+             color: #fff;
+              
+         }
+         footer .single-footer-widget .SubscribeText{
+             color: #afb4bf;
+             display:block;
+             margin-bottom:20px;
+         }
+         footer .single-footer-widget form input{
+             width: 80%;
+            height: 46px;
+            background-color: #3e525f;
+            border-radius: 30px 0 0 30px;
+            border: none;
+            padding: 0 20px;
+            color: #ffffff;
+            font-size: 14px;
+            max-width:100%;
+            float:left
+         }
+            footer .single-footer-widget form button {
+                border-radius:0 30px 30px 0;
+                background:#1cc3b2;
+                border:none;
+                color:#fff;
+                padding:13px 18px;
+                float:left
+            }
+            footer .aboveContent{
+                padding-bottom:50px;
+                border-bottom:1px #273d4b solid;
+                margin-bottom:20px;
+            }
+            .belowContent p, .belowContent a span{
+                color:#afb4bf !important;
+            }
+        #topheaderIcons{
+            float:right
+        }
+        #topheaderIcons div {
+            float:right; margin-left:40px;
+          
+        }
+        #topheaderIcons div span{
+            
+            color:#fff;
+        }
+        #topheaderIcons div span:hover{
+           color:#18bcaa;
+        }
+        #navafterlogin{
+            margin-bottom:0;
+            position:fixed;
+                width: 100%;
+            background-color:#0e2737;
+        }
+        #controlSection{
+            background-color:#f0f0f0; padding:20px;box-shadow:0 6px 6px -3px rgba(0,0,0,.2), 0 10px 14px 1px rgba(0,0,0,.14), 0 4px 18px 3px rgba(0,0,0,.12);
+        position:fixed;
+        height:100%;
+            }
+        #controlSection div{
+            color:#0e2737;
+            font-weight:bold;
+           margin:20px 0;
+        }
+        #controlSection div a{
+            color:#0e2737;
+            font-weight:bold;
+           
+        }
+        .splitdiv{
+            height:2px !important;
+            width:100% !important;
+            background-color:#1cc3b2 !important;
+            /*margin: 0 1px !important;*/
+        }
+        #navbeforeLogin{
+            margin-bottom:0;
+           -webkit-box-shadow: 0 8px 6px -6px #444343 ;
+            -moz-box-shadow: 0 8px 6px -6px #444343 ;
+            box-shadow: 0 8px 6px -6px #444343 ;
+            /*border-bottom:1px #aaa solid;*/
+        }
+        .scrollToTop{
+    position: fixed;
+    z-index: 2147483647;
+    right: 40px;
+    font-size: 20px;
+    line-height: 40px;
+    width: 40px;
+    height: 40px;
+    bottom: 40px;
+    background-color: #1cc3b2;
+    color: #ffffff;
+    text-align: center;
+    transition-duration: 500ms;
+    border-radius: 50%;
+        outline: none;
+    font-weight: 500;
+}
+.scrollToTop:hover,.scrollToTop:focus,.scrollToTop:active{
+    text-decoration:none;
+    background:#000;
+    color:#fff;
+}
+.scrollToTop span{
+    font-size:14px;
+    font-weight:normal;
+    text-align: center;
+    margin-right:-2px;
+    
+}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+    @if (!Request.IsAuthenticated)
+    {
+        <a href="#" class="scrollToTop"><span class="glyphicon glyphicon-chevron-up"></span></a>
+    }
+    @if (!Request.IsAuthenticated)
+    {
+        <div class="row " id="topHeader">
+            <div class="container">
+                <div class="col-md-2">
+                    <span class="glyphicon glyphicon glyphicon-earphone"></span>+02-01227361568
+                </div>
+                <div class="col-md-3">
+                    <span class="glyphicon glyphicon-envelope"></span>  befast.2019@gmail.com
+                </div>
+                <div class="col-md-3" id="topheaderIcons">
+                    <div>
+                        <a href="https://www.instagram.com/" target="_blank"><span class="fa fa-instagram"></span></a>
+                    </div>
+                    <div>
+                        <a href="https://www.google.com/" target="_blank"><span class="fa fa-google"></span></a>
+                    </div>
+                    <div>
+                        <a href="https://twitter.com/" target="_blank"><span class="fa fa-twitter"></span></a>
+                    </div>
+                    <div>
+                        <a href="https://www.facebook.com/" target="_blank"><span class="fa fa-facebook"></span></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>}
+    @*<div class="row  navbar-fixed-top" id="topHeader">*@
+
+
+    @if (Request.IsAuthenticated)
+    {
+        <div class="navbar navbar-inverse " id="navafterlogin">
+            <div class="container">
+                <div class="row">
+                    <div class="navbar-header col-md-4">
+                        <button type="button" class="navbar-toggle " data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="nav-brand" href="@Url.Action("Index", "Home")"><img src="~/Content/Images/Logo/logo2.png" alt="" valign="center"></a>
+                        @*@Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
+                        @if (Request.IsAuthenticated)
+                        {
+                            <div class="notification-icon nav navbar-nav navbar-right" id="ntificationContainer">
+                                <div class="notification-icon">
+                                    <div class="notifications">
+                                        <span class="glyphicon glyphicon-bell" id="bellIcon"></span>
+                                        <span class="num" id="ntCnt"></span>
+                                        <div class="noti-content">
+                                            <ul id="divNotificaion"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (!Request.IsAuthenticated)
+                {
+                        <div class="navbar-collapse collapse col-md-6">
+                            <ul class="nav navbar-nav" id="headerLinks">
+                                @*<li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                    <li>@Html.ActionLink("About Us", "About", "Home")</li>
+                                    <li>@Html.ActionLink("News", "Home", "Home")</li>
+                                    <li>@Html.ActionLink("Features", "Home", "Home")</li>
+                                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                @*<li><a href="#aboutTab">About Us</a></li>
+                                <li><a href="#featuresTab">Features</a></li>
+                                <li><a href="#manualTab">Manual</a></li>
+                                <li><a href="#contactlTab">Contact</a></li>*@
+                                <li><a class="aboutTabButton">About Us</a></li>
+                                <li><a class="featuresTabButton">Features</a></li>
+                                <li><a href="#manualTab">Manual</a></li>
+                                <li><a class="ContactTabButton">Contact</a></li>
+                            </ul>
+                        </div>
+                    }
+                    @if (Request.IsAuthenticated)
+                {
+
+                    using (Html.BeginForm("Logout", "User", FormMethod.Post, new { id = "logoutForm" }))
+                    {
+                            @Html.AntiForgeryToken()
+                            <div class="navbar-collapse collapse  logininfo">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li style="margin-left:10px">
+                                        @Html.ActionLink("Hello " + @HttpContext.Current.User.Identity.Name + "!", "AccountSettings", "Dashboard", routeValues: null, htmlAttributes: new { title = "Account Settings", style = "color:#fff !important" })
+                                    </li>
+                                    <li><a href="javascript:document.getElementById('logoutForm').submit()" style="color:#fff !important">Logout</a></li>
+                                </ul>
+                            </div>
+                        }
+
+                        /*<div class="notification-icon nav navbar-nav navbar-right">
+                            <span class="glyphicon glyphicon-bell" id="bellIcon"></span>
+                            <span class="badge" id="ntCnt"></span>
+                            <div class="noti-content">
+                                <div class="noti-top-arrow"></div>
+                                <ul id="divNotificaion"></ul>
+                            </div>
+                        </div>
+                        */
+                    }
+                    else
+                    {
+                        <div class="navbar-collapse collapse ">
+                            <ul class="nav navbar-nav loginformdiv">
+                                @*<li>@Html.ActionLink("Register", "Registration", "User", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@
+                                <li>@Html.ActionLink("Log in", "Login", "User", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+                            </ul>
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="navbar navbar-inverse " id="navbeforeLogin">
+            <div class="container">
+                <div class="row">
+                    <div class="navbar-header col-md-4">
+                        <button type="button" class="navbar-toggle " data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="nav-brand" href="@Url.Action("Index", "Home")"><img src="~/Content/Images/Logo/logo1.png" alt="" valign="center"></a>
+                        @*@Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
+                        @if (Request.IsAuthenticated)
+                        {
+                            <div class="notification-icon nav navbar-nav navbar-right" id="ntificationContainer">
+                                <div class="notification-icon">
+                                    <div class="notifications">
+                                        <span class="glyphicon glyphicon-bell" id="bellIcon"></span>
+                                        <span class="num" id="ntCnt"></span>
+                                        <div class="noti-content">
+                                            <ul id="divNotificaion"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (!Request.IsAuthenticated)
+                {
+                        <div class="navbar-collapse collapse col-md-6">
+                            <ul class="nav navbar-nav" id="headerLinks">
+
+                                @*<li>@Html.ActionLink("About Us", "About", "Home")</li>*@
+                                @*<li>@Html.ActionLink("Features", "Home", "Home")</li>*@
+                                @*<li>@Html.ActionLink("News", "Home", "Home")</li>*@
+                                @*<li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                @*<li><a id="testabout">About Us</a></li>
+                                <li><a href="#featuresTab">Features</a></li>
+                                <li><a href="#manualTab">Manual</a></li>
+                                <li><a href="#contactlTab">Contact</a></li>*@
+                                <li><a class="aboutTabButton">About Us</a></li>
+                                <li><a class="featuresTabButton">Features</a></li>
+                                <li><a href="#manualTab">Manual</a></li>
+                                <li><a class="ContactTabButton">Contact</a></li>
+                            </ul>
+                        </div>
+                    }
+                    @if (Request.IsAuthenticated)
+                {
+
+                    using (Html.BeginForm("Logout", "User", FormMethod.Post, new { id = "logoutForm" }))
+                    {
+                            @Html.AntiForgeryToken()
+                            <div class="navbar-collapse collapse  logininfo">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li style="margin-left:10px">
+                                        @Html.ActionLink("Hello " + @HttpContext.Current.User.Identity.Name + "!", "AccountSettings", "Dashboard", routeValues: null, htmlAttributes: new { title = "Account Settings" })
+                                    </li>
+                                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Logout</a></li>
+                                </ul>
+                            </div>
+                        }
+
+                        /*<div class="notification-icon nav navbar-nav navbar-right">
+                            <span class="glyphicon glyphicon-bell" id="bellIcon"></span>
+                            <span class="badge" id="ntCnt"></span>
+                            <div class="noti-content">
+                                <div class="noti-top-arrow"></div>
+                                <ul id="divNotificaion"></ul>
+                            </div>
+                        </div>
+                        */
+                    }
+                    else
+                    {
+                        <div class="navbar-collapse collapse ">
+                            <ul class="nav navbar-nav loginformdiv">
+                                @*<li>@Html.ActionLink("Register", "Registration", "User", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@
+                                <li>@Html.ActionLink("Log in", "Login", "User", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+                            </ul>
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+
+    @*</div>*@
+
+    @if (Request.IsAuthenticated)
+    {
+        <div class="row body-content ">
+
+            <div class="col-md-2" id="controlSection">
+                <br /><br /><br /><br />
+
+                <div>
+                    @Html.ActionLink("DASHBOARD", "TasksAndMeetings", "Home")<br />
+                </div>
+                <div class="splitdiv"></div>
+                <div>
+                    @Html.ActionLink("NEW MEETING", "Meeting_Form", "NewMeeting")<br />
+                </div>
+                <div class="splitdiv"></div>
+                <div>
+                    @Html.ActionLink("PREVIOUS MEETINGS", "Index", "previousMeeting")<br />
+                </div>
+                <div class="splitdiv"></div>
+                <div>
+                    @Html.ActionLink("STATISTICS", "startstat", "statistics")<br />
+                </div>
+                <div class="splitdiv"></div>
+                <div>
+                    @Html.ActionLink("NEW POST", "create", "Post")<br />
+                </div>
+
+                <div class="splitdiv"></div>
+                <div>
+                    @Html.ActionLink("FOLLOW USER", "All_Users", "Follow")<br />
+                </div>
+                <div class="splitdiv"></div>
+                <div>
+                    @Html.ActionLink("ACCOUNT SETTINGS", "AccountSettings", "Dashboard")<br />
+                </div>
+                <div class="splitdiv"></div>
+
+            </div>
+            <div class="col-md-10" style="float:right; ">
+                <br /><br /><br /><br /><br />
+                @RenderBody()
+            </div>
+
+
+            <br />
+        </div>
+    }
+    else
+    {
+        <div class="">
+
+
+            @RenderBody()
+
+
+
+            <br />
+        </div>
+    }
+    <br />
+    @if (!Request.IsAuthenticated)
+    {
+        <footer>
+
+            <div class="container">
+                <div class="row aboveContent">
+
+                    <div class="col-md-3 single-footer-widget">
+                        <a class="" href="@Url.Action("Index", "Home")"><img src="~/Content/Images/Logo/logo2.png" alt="" valign="center" style="height:55px;"></a>
+                        <h4 class="phone">+02-01227361568</h4>
+                        <span class="email">befast.2019@gmail.com</span>
+                        <span class="address">El Wagih St., 6 October, Egypt</span>
+                    </div>
+                    <div class="col-md-3 single-footer-widget">
+                        <h5 class="widget-title">Our Names</h5>
+                        <ul>
+                            <li>Khaled Said Badawy</li>
+                            <li>Hussein Ata Hussein</li>
+                            <li>Ahmed Sharawy Shehata</li>
+                            <li>Abanoub Amin Samir</li>
+                            <li>David Monir Foad</li>
+                        </ul>
+
+                    </div>
+
+                    <div class="col-md-2 single-footer-widget">
+                        <!-- Widget Title -->
+                        <h5 class="widget-title">Links</h5>
+
+                        <!-- Footer Nav -->
+                        <ul class="footer-nav">
+                            <li><a class="aboutTabButton"><i class="fa fa-caret-right" aria-hidden="true"></i> About Us</a></li>
+                            <li><a class="featuresTabButton"><i class="fa fa-caret-right" aria-hidden="true"></i> Features</a></li>
+                            <li><a href="#manualTab"><i class="fa fa-caret-right" aria-hidden="true"></i> Manual</a></li>
+                            <li><a class="ContactTabButton"><i class="fa fa-caret-right" aria-hidden="true"></i> Contact</a></li>
+                        </ul>
+                    </div>
+
+
+                    <div class="col-md-4 single-footer-widget">
+
+                        <!-- Widget Title -->
+                        <h5 class="widget-title">Subscribe Newsletter</h5>
+                        <span class="SubscribeText">Subscribe our newsletter gor get notification about new updates.</span>
+
+                        <!-- Newsletter Form -->
+                        <form action="index.html" class="nl-form">
+                            <input type="email" class="form-control" placeholder="Enter your email...">
+                            <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                        </form>
+
+                    </div>
+                </div>
+
+                <div class="row belowContent">
+                    <div class="col-md-7">
+                        <p>&copy; @DateTime.Now.Year - befast.2019@gmail.com</p>
+                    </div>
+                    <div class="col-md-3" id="topheaderIcons">
+                        <div>
+                            <a href="https://www.instagram.com/" target="_blank"><span class="fa fa-instagram"></span></a>
+                        </div>
+                        <div>
+                            <a href="https://www.google.com/" target="_blank"><span class="fa fa-google"></span></a>
+                        </div>
+                        <div>
+                            <a href="https://twitter.com/" target="_blank"><span class="fa fa-twitter"></span></a>
+                        </div>
+                        <div>
+                            <a href="https://www.facebook.com/" target="_blank"><span class="fa fa-facebook"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </footer>
+    }
+
+
+    <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+    <script src="~/signalr/Hubs/"></script>
+    <script>
+        $(".aboutTabButton").click(function () {
+            $('html,body').animate({
+                scrollTop: $("#aboutTab").offset().top
+            },
+                'slow');
+        });
+        $(".featuresTabButton").click(function () {
+            $('html,body').animate({
+                scrollTop: $("#featuresTab").offset().top
+            },
+                'slow');
+        });
+        $(".ContactTabButton").click(function () {
+            $('html,body').animate({
+                scrollTop: $("#contactlTab").offset().top
+            },
+                'slow');
+        });
+        
+        $(document).ready(function () {
+
+            //Check to see if the window is top if not then display button
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 100) {
+                    $('.scrollToTop').fadeIn();
+                } else {
+                    $('.scrollToTop').fadeOut();
+                }
+            });
+
+            //Click event to scroll to top
+            $('.scrollToTop').click(function () {
+                $('html, body').animate({ scrollTop: 0 }, 800);
+                return false;
+            });
+
+        });
+        $('span#bellIcon').click(function (e) {
+            $('#divNotificaion').toggle();
+            $('.noti-top-arrow').toggle();
+            $('#ntCnt').empty();
+            $('.num').css('background', 'transparent');
+        })
+        $(document).ready(function () {
+            //debugger
+            $('#divNotificaion').hide();
+            $('.noti-top-arrow').hide();
+
+            // Proxy created on the fly
+            var hub = $.connection.myNewHub;
+
+            // Declare a function on the hub hub so the server can invoke it
+            hub.client.displayStatus = function () {
+                //debugger
+                getData();
+            };
+
+            // Start the connection
+            $.connection.hub.start();
+            getData();
+
+            function getData() {
+                var divNotificaion = $('#divNotificaion');
+                $.ajax({
+                    url: '/Notification/GetNotification',
+                    type: 'GET',
+                    datatype: 'json',
+                    success: function (data) {
+                        //debugger
+                        data = $.parseJSON(data);
+                        if (data.length > 0) {
+                            divNotificaion.empty();
+                            //// set Count
+
+                            var unreaded = 0;
+                            ///Make notification html
+                            for (var i = 0; i < data.length; i++) {
+                                var dateObj = (new Date(data[i].Date.match(/\d+/)[0] * 1)).toLocaleString();
+                                var notification;
+                                var notiURL = data[i].DetailsURL.split("/");
+                                var actionID = data[i].NotificaionId;
+                                //if (data[i].VoteID != 0) {
+                                //    actionID = data[i].VoteID;
+                                //}
+                                var EditISReadedUrl = '@Url.Action("-2", "-1")?id=' + actionID;
+                                EditISReadedUrl = EditISReadedUrl.replace("-2", notiURL[1]);
+                                EditISReadedUrl = EditISReadedUrl.replace("-1", notiURL[0]);
+                                var DeleteNotficationUrl = '@Url.Action("DeleteNotfication", "Notification")/' + data[i].NotificaionId;
+                                if (!data[i].IsRead) {
+                                    notification = '<li  style="background-color: #f1f1f1;">' +
+                                   '<a href="' + DeleteNotficationUrl + '" class="close" data-dismiss="alert" aria-label="close">&times;</a><a href="' + EditISReadedUrl + '">'
+                                    + data[i].Message + '<br/>' + dateObj + '<label class = "notiID" hidden>' + data[i].NotificaionId + '</label>' + '</a>'
+                                    '</li>';
+                                    unreaded = unreaded + 1;
+                                }
+                                else {
+                                    notification = '<li >' +
+                                    '<a href="' + DeleteNotficationUrl + '" class="close" data-dismiss="alert" aria-label="close">&times;</a><a href="' + EditISReadedUrl + '">'
+                                    + data[i].Message + '<br/>' + dateObj + '<label class = "notiID"  hidden>' + data[i].NotificaionId + '</label>' + '</a>'
+                                    '</li>';
+                                }
+
+                                divNotificaion.append(notification);
+                            }
+                            if (unreaded > 0) {
+                                $('#ntCnt').text(unreaded);
+                            }
+                            else {
+                                $('.num').css('background', 'transparent');
+
+                            }
+
+                        }
+                    }, error: function (r, e, w) {
+                    }
+                });
+            }
+
+        })
+
+    </script>
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

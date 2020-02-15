@@ -1,0 +1,162 @@
+﻿@using MeetingMinutesGP.Models;
+@model List<UserMeeting>
+@{
+    ViewBag.Title = "TopicsForVote";
+    ViewBag.Title = "AssignTask";
+    GPEntities db = new GPEntities();
+    List<User> ParticipantsList = new List<User>();
+    for (int i =0;i<Model.Count ; i++)
+    {
+        User Participant = new User();
+        int user_id = Model[i].userID;
+        Participant = db.Users.Where(a => a.UserID == user_id).FirstOrDefault();
+        ParticipantsList.Add(Participant);
+    }
+    List<string> taskStatus = new List<string>() { "Not started", "In progress", "Put on hold", "Completed" };
+    List<Topic>Topics=(List<Topic>)ViewBag.TopicsList;
+    int counter =0;
+    int counter2 = 0;
+}
+<style>
+        .header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 97.5%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+   .vote{
+
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+   }
+   .tasks{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+        left:35%
+   }
+    .Popbtn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        margin:8px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+</style>
+<div class="col-sm-12 header" align="center"><strong>Meeting Topics</strong></div>
+<table class="table table-striped w-auto">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>  Topic Name     </th>
+            <th>  Topic Description  </th>
+            <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Vote  </th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Topics.Count; i++)
+        {
+            <tr class="table-info">
+                @{
+                    byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Topics[i].TopicID.ToString());
+                    string encyptedID = encyptedID = Convert.ToBase64String(encoded);
+                    counter++;
+                }
+                <th scope="row">@counter</th>
+                <td>@Topics[i].TopicName</td>
+                <td>@Topics[i].TopicDescription</td>
+                <td>
+                    @Html.ActionLink(" Vote", "voteInfo", "vote", new { id = encyptedID }, new { @class = "glyphicon glyphicon-volume-up col-sm-12" })
+                </td>
+            </tr>
+           }
+    </tbody>
+</table>
+
+
+<div>
+    <button type="button" class="glyphicon glyphicon-tasks tasks" id="addbtn" data-toggle="modal" data-target="#exampleModalCenter" title="Tasks"> <i class="fas fa-plus"></i></button>
+</div>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:1300px;height:1100px;position:center;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title header" id="exampleModalLongTitle" ><strong>Attended Persons</strong></h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (@Html.BeginForm("SaveTasks", "Attendence"))
+            {
+                <div class="modal-body">
+                    <table class="table table-striped w-auto">
+                        <thead>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Assigned Task</th>
+                        <th>Task Description</th>
+                        <th>Task Start Date</th>
+                        <th>Task End Date</th>
+                        <th>Task Status</th>
+                        </thead>
+                        <tbody>
+                            @{for (int i = 0; i < Model.Count; i++)
+                                {
+                                    counter2++;
+                                    <tr>
+                                        @Html.HiddenFor(m => m[i].userID)
+                                        @Html.HiddenFor(m => m[i].meetingID)
+                                        <th scope="row">@counter2</th>
+                                        <td>@ParticipantsList[i].Name</td>
+                                        <td>@ParticipantsList[i].Email</td>
+                                        <td>@Html.TextBoxFor(m => m[i].AssignedTask, new { @class = "form-control", @placeholder = "Task Name", @required = "required" })</td>
+                                        <td>@Html.TextBoxFor(m => m[i].TaskDescription, new { @class = "form-control", @placeholder = "Task Description", @required = "required" })</td>
+                                        <td>@Html.TextBoxFor(m => m[i].TaskStartDate, new { type = "datetime-local", @class = "form-control", @required = "required" })</td>
+                                        <td>@Html.TextBoxFor(m => m[i].TaskEndDate, new { type = "datetime-local", @class = "form-control", @required = "required" })</td>
+                                        <td>@Html.DropDownListFor(m => m[i].TaskStatus, new SelectList(taskStatus), new { @class = "form -control" })</td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="Popbtn" data-dismiss="modal">Close</button>
+                    <button type="submit" class="Popbtn">Save changes</button>
+                </div>
+}
+        </div>
+    </div>
+</div>

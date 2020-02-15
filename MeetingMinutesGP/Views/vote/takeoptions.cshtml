@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "takeoptions";
+}
+@*<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">*@
+<style>
+
+
+
+    
+    .header2 {
+        background-color: #0e2737;
+        padding: 15px;
+        /*margin: 10px;*/
+        /*width: 98%;*/
+        margin-bottom:10px;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+        border-bottom: 6px solid #f5af29;
+    }
+
+    .h:focus {
+        border-color: #1cc3b2;
+    }
+
+    .cba {
+        background-color: #f5af29;
+        color: white;
+        font-weight: bold;
+        font-size: 22px;
+        margin-top:5px;
+        padding:7px 17px;;
+        border-radius:50%;
+        border:none;
+    }
+
+    .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+
+    .cbr {
+        background-color: #1cc3b2;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        margin-top:5px;
+        padding:10px 17px;;
+        border-radius:50%;
+        border:none;
+    }
+
+    /*.save {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin: 30px;
+        left: 32%;
+    }*/
+
+    .divs {
+        font-size: 16px;
+        /*border-radius: 8px;
+        margin: 20px;*/
+    }
+
+    .save {
+        color: #f5af29;
+        background-color: #0e2737;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border:none;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin: 30px;
+        left: 32%;
+    }
+
+    .voteForm {
+        border-radius: 8px;
+        border: 2px ridge #f5af29;
+        padding: 0;
+        border-radius: 8px;
+        border-width: 1px 0 0 6px;
+        border-style: solid;
+        box-shadow: 0 7px 8px -4px rgba(0,0,0,.2), 0 12px 17px 2px rgba(0,0,0,.14), 0 5px 22px 4px rgba(0,0,0,.12);
+        /*font-family: "Poppins", sans-serif;*/
+    }
+    .voteoptions{
+        text-align:center !important;
+        /*display:block;*/
+    }
+    .voteoptions label{
+        border-bottom: 4px solid #1cc3b2;
+        width:25%;
+        padding:5px;
+    }
+</style>
+
+
+
+
+
+<div class="col-sm-12 header2"><strong>Enter vote Information</strong></div>
+
+<div class="col-md-12 voteForm">
+
+
+    @*<div class="col-sm-12 header"><strong>Vote options</strong></div>*@
+    <div>
+        <form method="post" action="CreateOptions">
+            @*<div class="col-sm-3"></div>*@
+            <div align="center" class="row" style="margin:30px;padding:15px 10px;box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;">
+                <div class="form-group  col-md-6 divs" align="center" >
+                    <label for="VoteName" >Vote Name</label>
+                    <input type="text" name="VoteNameText" class="form-control h" required="required" />
+                </div>
+                <div class="form-group  col-md-6 divs" align="center">
+                    <label for="VoteDescription" >Vote Description</label>
+                    <input type="text" name="VoteNameDes" class="form-control h" required="required" />
+                </div>
+            </div><hr />
+            @*<div class="col-sm-3"></div>*@
+
+            @*<br><br><br><br><br><br><br>*@
+            <div class="voteoptions divs">
+                <label>Vote Options</label>
+            </div>
+            <div id="InnerDiv">
+                <div align="center" style="margin:30px;padding:10px; box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;">
+                    <input type="text" name="TxtForDescription" class="h form-control" placeholder="Option" />
+                    <input type="button" class="w3-btn w3-circle cba" onclick="AddTextBox();" value="+" title="Add" />
+                </div>
+            </div>
+            <button type="submit" class="glyphicon glyphicon-ok save" id="addbtn" title="Save"></button>
+
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    function DynamicTextBoxes(value) {
+        return '<div align="center" style="margin:30px;padding:10px;box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;"><input class="h form-control" type="text" name="TxtForDescription"placeholder="Option"/><input type="button" class="w3-btn w3-circle cbr" onclick="RemoveTextBox(this);" value="X"/></div>';
+    }
+    function AddTextBox() {
+        var div = document.createElement("Div");
+        div.innerHTML = DynamicTextBoxes("");
+        document.getElementById("InnerDiv").appendChild(div);
+    }
+    function RemoveTextBox(div) {
+        document.getElementById("InnerDiv").removeChild(div.parentNode.parentNode);
+    }
+</script>
+
+

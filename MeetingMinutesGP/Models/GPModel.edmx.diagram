@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="8e51d8f2bb944908acbca93ba8f7a45b" Name="Diagram1" ZoomLevel="65">
+        <EntityTypeShape EntityType="GPModel.Agendum" Width="1.5" PointX="3" PointY="17.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="GPModel.Location" Width="1.5" PointX="1.5" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="GPModel.Post" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="GPModel.User" Width="1.5" PointX="0.75" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="GPModel.UserMeeting" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="GPModel.FK_Post_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="GPModel.FK_UserMeeting_User" ManuallyRouted="false" />
+        <AssociationConnector Association="GPModel.Follow" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="GPModel.PersonalTask" Width="1.5" PointX="3" PointY="20.5" />
+        <AssociationConnector Association="GPModel.FK_PersonalTask_User" />
+        <EntityTypeShape EntityType="GPModel.Option" Width="1.5" PointX="7.5" PointY="19.625" />
+        <EntityTypeShape EntityType="GPModel.Vote" Width="1.5" PointX="7.5" PointY="16.25" />
+        <AssociationConnector Association="GPModel.FK_Options_Vote1" />
+        <EntityTypeShape EntityType="GPModel.sysdiagram" Width="1.5" PointX="5.375" PointY="0.75" />
+        <EntityTypeShape EntityType="GPModel.Notification" Width="1.5" PointX="9.75" PointY="8.25" />
+        <AssociationConnector Association="GPModel.FK_Notification_UserMeeting1" />
+        <AssociationConnector Association="GPModel.FK_Notification_Vote" />
+        <EntityTypeShape EntityType="GPModel.Meeting" Width="1.5" PointX="3.75" PointY="12.125" />
+        <EntityTypeShape EntityType="GPModel.Topic" Width="1.5" PointX="5.25" PointY="16.75" />
+        <AssociationConnector Association="GPModel.FK_Agenda_Meeting" />
+        <AssociationConnector Association="GPModel.FK_Topic_Agenda1" />
+        <AssociationConnector Association="GPModel.FK_Meeting_Location" />
+        <AssociationConnector Association="GPModel.FK_UserMeeting_Meeting" />
+        <AssociationConnector Association="GPModel.FK_Topic_Topic" />
+        <AssociationConnector Association="GPModel.FK_Vote_Topic" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

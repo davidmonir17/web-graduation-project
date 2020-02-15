@@ -1,0 +1,80 @@
+﻿@using MeetingMinutesGP.Models
+@model Vote
+@{
+    ViewBag.Title = "voteInfo";
+}
+<style>
+        .header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 98%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+        .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+
+    .divs {
+        font-size: 15px;
+        border-radius: 8px;
+        margin: 20px;
+    }
+
+    .h:focus {
+        border-color: #1cc3b2;
+    }
+    .save{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+        left:32%
+    }
+</style>
+<div class="col-sm-12 header"><strong>Vote Information</strong></div>
+<div style="box-shadow: 10px 10px 10px 10px #888888;background-position:center;background-repeat:no-repeat;margin-top:10px;" class="col-sm-12">
+    <br><br>
+    @using (Html.BeginForm("CreateVote", "vote"))
+    {
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="form-group divs"align="center">
+                <label for="VoteName"class="col-sm-7">Vote Name</label>
+                @Html.TextBoxFor(m => m.VoteName, new { @class = "form-control h", @required = "required" })
+            </div>
+            <div class="form-group divs"align="center">
+                <label for="VoteDescription"class="col-sm-8">Vote Description</label>
+                @Html.TextBoxFor(m => m.VoteDescription, new { @class = "form-control h", @required = "required" })
+            </div>
+            @Html.HiddenFor(m => m.topicID)
+            @Html.HiddenFor(m => m.VoteResult)
+            
+        </div>
+        <div class="col-sm-3"></div>
+
+        <button type="submit" class="glyphicon glyphicon-ok save" id="addbtn" title="Save"></button>
+    }
+
+</div>

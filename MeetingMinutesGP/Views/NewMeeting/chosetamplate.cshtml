@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "chosetamplate";
+}
+<style>
+    .t1 {
+        background-image: url( "~/Content/Images/t1.PNG" );
+        background-size: 100px 130px;
+        height: 234px;
+        width: 204px;
+    }
+
+    .t2 {
+        background-image: url( '~/Content/Images/t2.PNG');
+        background-size: 100px 130px;
+        height: 234px;
+        width: 204px;
+    }
+</style>
+<button value="redirect" class="t1" onclick="window.location='@Url.Action("EatTemplate", "NewMeeting")'"></button>
+<button value="redirect2" class="t2" onclick="window.location='@Url.Action("medical_tamplete", "NewMeeting")'"></button>
+<button value="redirect3" class="t2" onclick="window.location='@Url.Action("ReportTemplate", "NewMeeting")'"></button>
+
+

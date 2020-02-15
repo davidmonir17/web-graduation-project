@@ -1,0 +1,402 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>*@
+
+@* Email: befast.2019@gmail.com Password:  BefastMeetingMinutes.2019*@
+
+
+<style>
+    .carousel-caption{
+        /*background-color:black;*/
+       margin-bottom:150px;
+    }
+    .carousel-inner .item img{
+        height:510px !important;
+    }
+    .carousel-inner .item h5{
+        font-size:35px;
+        font-weight:bold;
+    }
+    .carousel-inner .item p{
+        font-size:20px;
+        /*font-weight:bold;*/
+    }
+    .aboutusSection{
+
+    }
+    .aboutusTitle{
+        color:#18bcaa;
+        margin-top:0;
+        text-transform:uppercase;
+        letter-spacing:2px;
+        display:block;
+        margin-bottom:10px;
+        
+    }
+    .aboutusText{
+        padding-left:40px;
+    }
+    .subtitleDesign{
+        font-size:42px;
+        text-transform:capitalize;
+        line-height:1.2;
+        display:block;
+        margin-bottom:20px;
+        font-weight:500;
+    }
+    .aboutusText p{
+        line-height:1.7;
+        color:#636a76;
+        font-size:16px;
+        font-weight:400;
+        /*margin-bottom:1rem;*/
+    }
+    .aboutusText h3{
+        
+        margin-top:30px;
+        
+    }
+    .features{
+        background:#e5e5e5;
+        padding:20px;
+    }
+    .TilteDesign{
+        
+        text-align:center;
+        /*color:#18bcaa;*/
+        margin-bottom:30px;
+    }
+    .features p{
+        
+        text-align:center;
+      
+    }
+    .featuresGroup div{
+        text-align:center;
+        
+        /*box-shadow:0 7px 8px -4px rgba(0,0,0,.2), 0 12px 17px 2px rgba(0,0,0,.14), 0 5px 22px 4px rgba(0,0,0,.12);*/
+        /*border:1px #aaa solid;*/
+    }
+    .featuresGroup div .innerdiv{
+        background-color:#fff;
+        width:95%;
+        box-shadow:0 7px 8px -4px rgba(0,0,0,.2), 0 12px 17px 2px rgba(0,0,0,.14), 0 5px 22px 4px rgba(0,0,0,.12);
+        margin:0 auto 20px auto;
+        border-radius:5px;
+    }
+    .featuresGroup div img{
+        padding-top:5px;
+        width:97%;  
+        border-radius:6px;
+        height:200px;
+    }
+    .featuresGroup div p{
+        margin-top:10px;
+        padding-bottom:10px;
+    }
+    .features .featuresText{
+        font-size:15px;
+        margin-bottom:20px;
+    }
+    .contact{
+        box-shadow:0 2px 40px 8px rgba(15, 15, 15, 0.15);
+        padding:35px;
+        border-radius:4px;
+    }
+    .contact input{
+        width:100%;
+        height:50px;
+        padding:0 20px;
+        border-radius:2px;
+        color:#afb4bf;
+        font-size:14px;
+        border:1px solid #ebebeb;
+        margin-bottom:30px;
+        display:block;
+        font-weight:400;
+        max-width:100%;
+    }
+    .contact textarea{
+        width:100%;
+        height:150px;
+        padding:20px;
+       border-radius:2px;
+       color:#afb4bf;
+       font-size:14px;
+       border:1px solid #ebebeb;
+        margin-bottom:30px;
+        display:block;
+        font-weight:400;
+        line-height:1.5;
+        overflow:auto;
+        resize:vertical;
+        font-family:inherit;
+        max-width:100%;
+    }
+    .contact  button{
+        cursor:pointer;
+        position: relative;
+    z-index: 1;
+    min-width: 150px;
+    height: 46px;
+    line-height: 46px;
+    font-size: 16px;
+    font-weight: 500;
+    display: block;
+    padding: 0 40px;
+    text-align: center;
+    text-transform: capitalize;
+    background-color: #18bcaa;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    margin: 0 auto;
+    }
+    .contact  button:focus,
+.contact  button:hover {
+        font-weight: 500;
+        box-shadow:0 2px 40px 8px rgba(15, 15, 15, 0.15);
+        background-color: #fff;
+        color: #18bcaa;
+    }
+    .contact .single-contact-info{
+        text-align:center;
+        margin-bottom:50px;
+        margin-top:10px;
+    }
+    .contact .single-contact-info i{
+        display: inline-block;
+        font-size: 30px;
+        margin-bottom: 15px;
+        color: #1cc3b2;
+    }
+    .contact .single-contact-info h4{
+        font-family: "Poppins", sans-serif;
+        color: #2a303b;
+        line-height: 1.3;
+        font-weight: 600;
+        font-size:23px;
+    }
+    .contact .single-contact-info p{
+            line-height: 1.7;
+        color: #636a76;
+        font-size: 16px;
+        font-weight: 400;
+
+    }
+    #navbeforeLogin{
+            margin-bottom:0;
+            box-shadow:none !important;
+            /*border-bottom:1px #aaa solid;*/
+        }
+</style>
+<div class="">
+    
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+            <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+            <div class="item active">
+                <img src="~/Content/Images/carousel1.jpg" alt="Los Angeles" style="width:100%;">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Befast, for efficient and well-documented meetings</h5>
+                    <p>Own your meetings, from agenda to minutes</p>
+                </div>
+            </div>
+            <div class="item">
+                <img src="~/Content/Images/carousel2.jpg" alt="New york" style="width:100%;">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>
+                        Automate your meeting agenda and meeting minutes
+                    </h5>
+                    <p>Your time is important, so use it effectively</p>
+                </div>
+            </div>
+
+            <div class="item">
+                <img src="~/Content/Images/carousel3.jpg" alt="Chicago" style="width:100%;">
+                
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>
+                        Prepare your agenda in less than 20 seconds
+                        Try Befast. It’s free. Forever.
+                    </h5>
+                    <p>Create your meeting agenda, Write meetings notes and assign tasks</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+<br /><br /><br /><br />
+<div class="container aboutusSection" id="aboutTab">
+    <div class="col-md-6">
+        <img src="~/Content/Images/AboutUs.jpg" alt="Chicago" style="width:95%; height:100%; border-radius:6px;">
+    </div>
+    <div class="col-md-6 aboutusText">
+
+        <h4 class="aboutusTitle">About US</h4>
+        <h2 class="subtitleDesign">who are we?</h2>
+        <p>Firstly, We are fourth year students at Faculty of Computer and Information Science, Information Systems Department, Ain Shams University and this is our graduation project.</p>
+        <h3>What is Befast?</h3>
+        <p>Befast makes it easy to manage, structure, record and follow-up on your meetings. Set the agenda, meet and get things done.</p>
+        <p>
+            Our slogan: Collaborate before, during and after meetings.
+            @*A good meeting starts with thorough preparation and ends with clear, well documented minutes and tasks. With Befast all participants can easily work together on the agenda, share documents, and provide updates on tasks.*@
+        </p>
+    </div>
+</div>
+<br /><br /><br />
+<div class="features row" id="featuresTab">
+    @*e5e5e5*@
+    <h4 class="aboutusTitle TilteDesign">Some Features</h4>
+    <p class="featuresText"> Meetings are useful and essential to the organization. They forge team spirit, collaboration, generate new ideas and solve important problems.<br />Befast takes charge of planning, execution and action follow-up and you, the control of your meetings from beginning to the end.</p>
+    <div class="container featuresGroup">
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f1.jpg" alt="Chicago">
+                <p>Create meeting agenda</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f2.jpg" alt="Chicago">
+                <p>Topic time prediction</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f3.jpg" alt="Chicago">
+                <p>Attach files and Export</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f4.jpg" alt="Chicago">
+                <p>Notify users and Chat features</p>
+            </div>
+        </div>
+    </div>
+    <div class="container featuresGroup" >
+        
+        
+       
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f5.jpg" alt="Chicago">
+                <p>View meetings and tasks</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f6.jpg" alt="Chicago">
+                <p>search on previous meetings</p>
+            </div>
+        </div>
+                <div class="col-md-3">
+                    <div class="innerdiv">
+                        <img src="~/Content/Images/FeatruesImages/f7.jpg" alt="Chicago">
+                        <p>Assign and filter tasks</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="innerdiv">
+                        <img src="~/Content/Images/FeatruesImages/f8.jpg" alt="Chicago">
+                        <p>Announcements for followers</p>
+                    </div>
+                </div>
+        
+    </div>
+    <div class="container featuresGroup">
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f9.jpg" alt="Chicago">
+                <p>Attendance Management</p>
+            </div>
+        </div>
+            <div class="col-md-3">
+                <div class="innerdiv">
+                    <img src="~/Content/Images/FeatruesImages/f10.jpg">
+                    <p>Make vote on a specific topic</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="innerdiv">
+                    <img src="~/Content/Images/FeatruesImages/f11.jpg" alt="Chicago">
+                    <p>Choose existing templates</p>
+                </div>
+            </div>
+        <div class="col-md-3">
+            <div class="innerdiv">
+                <img src="~/Content/Images/FeatruesImages/f12.jpg" alt="Chicago">
+                <p>Voice commands and Statistics</p>
+            </div>
+        </div>
+    </div>
+</div>
+<br /><br /><br />
+<div class="container contact" id="contactlTab">
+    <h4 class="aboutusTitle TilteDesign">CONTACT US</h4>
+    
+    <div>
+        
+        <div class="col-md-3 single-contact-info">
+            <i class="fa fa-phone" aria-hidden="true"></i>
+            <h4>Phone</h4>
+            <p>+02-01227361568</p>
+        </div>
+        <div class="col-md-3 single-contact-info">
+            <i class="fa fa-map-marker" aria-hidden="true"></i>
+            <h4>Address</h4>
+            <p>El Wagih St., 6 October, Egypt</p>
+        </div>
+        <div class="col-md-3 single-contact-info">
+            <i class="fa fa-clock-o" aria-hidden="true"></i>
+            <h4>Open time</h4>
+            <p>00:01 am to 23:59 pm</p>
+        </div>
+        <div class="col-md-3 single-contact-info">
+            
+                <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                <h4>Email</h4>
+                <p>befast.2019@gmail.com</p>
+            
+        </div>
+    </div>
+    
+    <div>
+        <h2 class="subtitleDesign" style="text-align:center;margin-bottom:40px;">Leave Message</h2>
+        <div>
+            <div class="col-md-6">
+                <input type="text" name="message-name" class="form-control mb-30" placeholder="Your Name">
+            </div>
+            <div class="col-md-6">
+                <input type="email" name="message-email" class="form-control mb-30" placeholder="Your Email">
+            </div>
+        </div>
+        <div class="container">
+            <textarea name="message" class="form-control mb-30" placeholder="Your Message"></textarea>
+        </div>
+        <div>
+            <button type="submit" class="btn roberto-btn mt-15">Send Message</button>
+        </div>
+    </div>
+</div>

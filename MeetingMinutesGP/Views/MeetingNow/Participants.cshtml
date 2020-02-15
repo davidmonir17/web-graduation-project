@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewBag.Title = "Participants";
+}
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+        .header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 98%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }
+        .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+    .cba{
+        background-color: #1cc3b2;
+        color:white;
+        font-weight: bold;
+        font-size:20px;
+    }
+        .cbr{
+        background-color: red;
+        color:white;
+        font-weight: bold;
+        font-size:20px;
+    }
+    .h:focus {
+        border-color: #1cc3b2;
+    }
+    .str{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+        left:32%
+    }
+</style>
+<div class="col-sm-12 header"><strong>Participants Of Meeting</strong></div>
+<div class="col-sm-12 header"><strong>Please Be carefull while entering Users Emails</strong></div>
+<div>
+    <form method="post" action="AddParticipants">
+
+        <div id="InnerDiv">
+            <div align="center"  style="margin:30px;padding:10px;box-shadow: 9px 10px 8px 10px #888888;">
+                <input type="text" name="TxtForEmail" placeholder="User Email"class="h form-control"/>
+                <input type="button" class="w3-btn w3-circle cba" onclick="AddTextBox();"value="+"/>
+            </div>
+        </div>
+        <button type="submit" class="glyphicon glyphicon-arrow-right str" id="addbtn" title="Start Meeting"></button>
+    </form>
+</div>
+<script type="text/javascript">
+    function DynamicTextBoxes(value) {
+        return '<div align="center"style="margin:30px;padding:10px;box-shadow: 9px 9px 8px 10px #888888;" ><input type="text" name="TxtForEmail"placeholder="User Email"class="h form-control"/><input type="button" class="w3-btn w3-circle cbr" onclick="RemoveTextBox(this);" value="  X "/></div>';
+    }
+    function AddTextBox() {
+        var div = document.createElement("Div");
+        div.innerHTML = DynamicTextBoxes("");
+        document.getElementById("InnerDiv").appendChild(div);
+    }
+    function RemoveTextBox(div) {
+        document.getElementById("InnerDiv").removeChild(div.parentNode.parentNode);
+    }
+</script>
+
+
+
+

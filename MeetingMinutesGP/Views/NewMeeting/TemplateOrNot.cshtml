@@ -1,0 +1,58 @@
+﻿@using MeetingMinutesGP.Models
+@model Meeting
+@{
+    ViewBag.Title = "TemplateOrNot";
+}
+<style>
+    .header {
+            background-color: #808080;
+            padding: 15px;
+            height: auto;
+            text-align: center;
+            color: white;
+            /*font-size: 20px;
+            font-weight: bold;*/
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-bottom: 6px solid #18bcaa;
+        }
+    #mettTitle {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    button{
+        color:#fff;
+        background:#18bcaa;
+        border:none;
+    }
+</style>
+<div class="col-sm-12 header" align="center">
+    <label id="mettTitle">Choose template or cancel</label><br />
+</div>
+@*<button onclick="RedirectToFood()">Food Template</button>
+<button onclick="RedirectToMedical()">Medical Template</button>
+<button onclick="RedirectToCancel()">Cancel</button>*@
+<div class="meetnowcont" style="padding:10px;box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;height:80px;">
+    <div class="col-sm-4">
+        <button type="button" class="btnh" title="Tasks" onclick="RedirectToFood()" style="padding:10px;margin:10px;float:left;width:160px;height:42px;">Food Template</button>
+    </div>
+    <div class="col-sm-4" align="center">
+        <button align="center" type="button" class="btnh " title="Chat" onclick="RedirectToMedical()" style="padding:10px;margin:10px;width:160px;height:42px;">Medical Template</button>
+    </div>
+    <div class="col-sm-4">
+        <!-- Button trigger modal -->
+        <button onclick="RedirectToCancel()" style="float:right;width:160px;height:42px;margin:10px;padding:10px;" type="button" class="btnh" id="addbtn" data-toggle="modal" data-target="#exampleModalCenter" title="Attendence">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function RedirectToFood() {
+        location.href = '@Url.Action("EatTemplate", "NewMeeting", new { id = @Model.MeetingID })';
+    }
+    function RedirectToMedical() {
+        location.href = '@Url.Action("medical_tamplete", "NewMeeting", new { id = @Model.MeetingID })';
+    }
+    function RedirectToCancel() {
+        location.href = '@Url.Action("TasksAndMeetings", "Home",new { id = @Model.MeetingID })';
+    }
+</script>

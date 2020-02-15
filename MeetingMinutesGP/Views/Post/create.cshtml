@@ -1,0 +1,103 @@
+﻿@using MeetingMinutesGP.Models
+@model Post
+@{
+    ViewBag.Title = "create";
+}
+
+<style>
+     /*.header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 98%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }*/ 
+    .divs {
+        font-size: 15px;
+        border-radius: 8px;
+        margin: 20px;
+    }
+    .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+    .h:focus {
+        border-color: #1cc3b2;
+
+    }
+    .share{
+        color: white;
+        background-color: #1cc3b2;
+        padding: 5px 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 30%;
+        /*height: auto;*/
+        white-space: normal;
+        margin-bottom: 10px;
+        margin:30px;
+        left:32%
+    }
+     .header {
+            background-color: #808080;
+            padding: 15px;
+            height: auto;
+            text-align: center;
+            color: white;
+            /*font-size: 20px;
+            font-weight: bold;*/
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-bottom: 6px solid #18bcaa;
+        }
+    #mettTitle {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    button{
+        color:#fff;
+        background:#18bcaa;
+        border:none;
+    }
+</style>
+<div class="col-sm-12 header" align="center">
+    <label id="mettTitle">New Anouncement</label><br />
+</div>
+@*<div class="col-sm-12 header"><strong>New Anouncement</strong></div>*@
+<div style="box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;background-position:center;background-repeat:no-repeat;margin-top:10px;" class="col-sm-12">
+    @using (Html.BeginForm("create_post", "Post"))
+    {
+        @Html.HiddenFor(m=>m.PostID)
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="form-group divs" align="center">
+                <label for="PostContent" class="col-sm-7">&nbsp;&nbsp;&nbsp;&nbsp;Post Content</label>
+                @Html.TextAreaFor(m => m.PostContent, new { @class = "form-control h" })
+            </div>
+            <div align="center">
+            @Html.RadioButtonFor(m => m.PostPrivacy, "public")     <label>Public</label><br>
+            <span>&nbsp;&nbsp;</span>@Html.RadioButtonFor(m => m.PostPrivacy, "private")    <label>Private</label><br>
+            </div>
+            @Html.HiddenFor(m => m.PostID)
+            @Html.HiddenFor(m => m.userID)
+        </div>
+        <div class="col-sm-3"></div>
+        <button type="submit" class="glyphicon  share"> Share</button>
+
+    }
+
+</div>

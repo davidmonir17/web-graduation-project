@@ -1,0 +1,53 @@
+﻿@using MeetingMinutesGP.Models
+@model List<UserMeeting>
+@{
+    ViewBag.Title = "AssignTask";
+    GPEntities db = new GPEntities();
+    List<User> ParticipantsList = new List<User>();
+    for (int i = 0; i < Model.Count; i++)
+    {
+        User Participant = new User();
+        int user_id = Model[i].userID;
+        Participant = db.Users.Where(a => a.UserID == user_id).FirstOrDefault();
+        ParticipantsList.Add(Participant);
+    }
+    List<string> taskStatus = new List<string>() { "Not started", "In progress", "Put on hold", "Put on hold", "Completed" };
+}
+
+<p style="background-color: #938480;padding:10px;margin:10px;width:1110px;text-align:center;">Assign Task</p>
+@using (Html.BeginForm("SaveTasks", "Attendence"))
+{
+    <div>
+        <table class="table table-bordered">
+            <thead>
+            <th>User Name</th>
+            <th>User Email</th>
+            <th>Assigned Task</th>
+            <th>Assigned Description</th>
+            <th>Task Start Date</th>
+            <th>Task End Date</th>
+            <th>Task Status</th>
+            </thead>
+            <tbody>
+                @{for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>@ParticipantsList[i].Name</td>
+                            <td>@ParticipantsList[i].Email</td>
+                            <td>@Html.TextBoxFor(m => m[i].AssignedTask, new { @class = "form-control", @placeholder = "Task Name", @required = "required" })</td>
+                            <td>@Html.TextBoxFor(m => m[i].TaskDescription, new { @class = "form-control", @placeholder = "Task Description", @required = "required" })</td>
+                            <td>@Html.TextBoxFor(m => m[i].TaskStartDate, new { type = "datetime-local", @class = "form-control", @required = "required" })</td>
+                            <td>@Html.TextBoxFor(m => m[i].TaskEndDate, new { type = "datetime-local", @class = "form-control", @required = "required" })</td>
+                            <td>@Html.DropDownListFor(m => m[i].TaskStatus, new SelectList(taskStatus), new { @class = "form -control" })</td>
+                            @Html.HiddenFor(m => m[i].userID)
+                            @Html.HiddenFor(m => m[i].meetingID)
+                            @Html.HiddenFor(m => m[i].Attended)
+                        </tr>
+
+                    }
+                }
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-secondary" value="Save" />
+    </div>
+}

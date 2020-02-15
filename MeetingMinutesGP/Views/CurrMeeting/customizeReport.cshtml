@@ -1,0 +1,432 @@
+﻿@using MeetingMinutesGP.Models
+@model ExportModel
+@{
+    //Layout = null;
+    ViewBag.Title = "customizeReport";
+    List<string> UserNames = new List<string>();
+    GPEntities db = new GPEntities();
+    for (int i = 0; i < Model.user_meeting.Count; i++)
+    {
+        int user_id = Model.user_meeting[i].userID;
+        User user = db.Users.Where(a => a.UserID == user_id).FirstOrDefault();
+        UserNames.Add(user.Name);
+    }
+}
+@*@Styles.Render("~/Content/css")*@
+@Scripts.Render("~/bundles/modernizr")
+@Scripts.Render("~/bundles/jquery")
+
+@*<link rel="stylesheet" href="~/Content/style.css">*@
+@*@Scripts.Render("~/Content/TemplateFiles/js/jquery.min.js")*@
+<link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+<style>
+    .underline {
+        height: 2px;
+        background: #0e2737;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .underlineCont {
+        height: 2px;
+        background: #18bcaa;
+        width: 100%;
+        /*margin-top:20px;*/
+        margin-bottom: 20px;
+    }
+
+    .chooseimg {
+        width: 100%;
+    }
+
+    .thead-dark {
+        background: #0e2737;
+        color: #fff;
+        font-size: 16px;
+    }
+
+    .tablebody {
+        font-size: 15px;
+    }
+
+    .agendaTitle {
+        /*margin-top:40px;*/
+        font-weight: bold;
+        font-size: 26px;
+    }
+
+        .agendaTitle span {
+            font-size: 24px;
+        }
+
+    .meetingInfo {
+        font-size: 17px;
+    }
+
+    .meetingInfoMainTop {
+        font-size: 18px;
+    }
+
+    .meetingInfo span {
+        font-weight: normal;
+        font-size: 16px;
+    }
+
+    .Topic {
+        background: #bebebe;
+        color: #fff;
+        width: 100%;
+        font-size: 23px;
+        padding: 5px;
+        font-weight: bold;
+    }
+</style>
+<br />
+<div class="container body-content">
+    <div>
+
+        <div class="row">
+            <div class="col-md-9 agendaTitle">
+                <label>@Model.agenda.Title - <span>@Model.meeting.MeetingDate.Date.Month/@Model.meeting.MeetingDate.Date.Day/@Model.meeting.MeetingDate.Date.Year</span> </label>
+            </div>
+            <div class="col-md-3">
+                <div class="btn btn-primary chooseimg">
+                    <input type="file" id="imageBrowes" />
+                </div>
+                @*<hr />*@
+                @*thumbnail*@
+                <div id="imgPreview" class="" style="display:none">
+                    <div class="caption" style="float:right">
+                        <a href="#" onclick="ClearPreview()"><i class="glyphicon glyphicon-trash"></i></a>
+                        @*<span id="description"></span>*@
+                    </div>
+                    <img class="img-responsive" id="targetImg" style="width:100px;height:80px; float:right" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="underlineCont"></div><br />
+    @*<div>*@
+
+
+    @*</div>*@
+    <div class="row">
+        <div class="col-md-8">
+            <label class="meetingInfo">Date and time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span>@Model.meeting.MeetingDate</span></label><br />
+            <label class="meetingInfo">Duration:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span>@Model.meeting.MeetingDuration hours</span></label><br />
+            @if (@Model.location != null)
+            {
+                <label class="meetingInfo">Company: <span>@Model.location.Company</span></label><br />
+                <label class="meetingInfo">Location name: <span>@Model.location.Address</span></label><br />
+                <label class="meetingInfo">Floor: <span>@Model.location.Floor</span></label><br />
+                <label class="meetingInfo">Room number: <span>@Model.location.RoomNumber</span></label><br />
+            }
+
+            <label class="meetingInfo">Leader:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span>@Model.leader.Name</span></label><br />
+
+        </div>
+        <div class="col-md-4">
+            @*<label>Participant(s): </label><br />*@
+            <table class="table table-bordered table-responsive " style="text-align:center">
+                <thead class="thead-dark" style="text-align:center; background:#2a6496; color:#fff;">
+                    <tr>
+                        <th style="text-align:center">Participant(s)</th>
+                        <th style="text-align:center">Atended</th>
+                    </tr>
+                </thead>
+                <tbody class="tablebody">
+                    @{
+                        //int partcount = 1;
+                        for (int i = 0; i < Model.user_meeting.Count; i++)
+                        {
+                            if (Model.user_meeting[i].Coordinator == null)
+                            {
+                                if (Model.user_meeting[i].Attended)
+                                {
+                                    <tr>
+                                        <td><label>@UserNames[i]</label></td>
+                                        <td><label class="glyphicon glyphicon-ok" style="color:#0e2737 "></label></td>
+
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td><label>@UserNames[i]</label></td>
+                                        <td><label class="glyphicon glyphicon-remove" style="color:#aaa"></label></td>
+
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+    <div class="underlineCont"></div>
+    <div class="Topic">Topics</div><br />
+    @{
+        int counter = 0;
+        int maintopicid = -1;
+        for (int i = 0; i < @Model.topics.Count; i++)
+        {
+
+            if (@Model.topics[i].subTopicId == null)
+            {
+                maintopicid = i;
+                if (i != 0)
+                {
+                    <br /><div class="underlineCont" style="width:60%;"></div>
+                }
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="meetingInfo meetingInfoMainTop"><strong>@(++counter). @Model.topics[i].TopicName</strong></label><br />
+                        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Topic Description: @(Model.topics[i].TopicDescription)</label><br />
+                        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planned time: @(Model.topics[i].TopicTime) min.</label><br />
+                        @if (Model.topics[i].FileLocation != null)
+                        {
+                            string fileLoc = Model.topics[i].FileLocation;
+                            string[] name = fileLoc.Split('\\');
+                            string fileName = name[name.Count() - 1];
+
+                            <div class="file_div">
+                                <div>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    @Html.ActionLink(fileName, "Action", "Agenda", new { TopicId = Model.topics[i].TopicID }, new { @class = "glyphicon glyphicon-download-alt", @role = "button" })
+                                </div>
+                            </div>
+
+                        }
+                        @{
+                            int ij = i + 1;
+                            if (ij < Model.topics.Count)
+                            {
+                                while (@Model.topics[ij].subTopicId != null)
+                                {
+                                    int spacecount = 20;
+
+                                    for (int j = 0; j < (Model.topics[ij].TopicName).Length; j++)
+                                    {
+                                        if (Model.topics[ij].TopicName[j] == '.')
+                                        {
+                                            Model.topics[ij].TopicName = Model.topics[ij].TopicName.Remove(j, 1);
+                                            spacecount += 25;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    if (Model.topics[ij].TopicName[0] == '.')
+                                    {
+                                        Model.topics[ij].TopicName = Model.topics[ij].TopicName.Remove(0, 1);
+                                        spacecount += 25;
+                                    }
+                                    <hr />
+
+
+
+                                    <div style="margin-left: @(spacecount)px">
+                                        <label class="meetingInfo">@Model.topics[ij].TopicName</label><br />
+                                        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Topic Description: @(Model.topics[ij].TopicDescription)</label><br />
+                                        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planned time: @(Model.topics[ij].TopicTime) min.</label><br />
+                                        @if (Model.topics[ij].FileLocation != null)
+                                        {
+                                            string fileLoc = Model.topics[ij].FileLocation;
+                                            string[] name = fileLoc.Split('\\');
+                                            string fileName = name[name.Count() - 1];
+
+                                            <div class="file_div">
+                                                <div>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    @Html.ActionLink(fileName, "Action", "Agenda", new { TopicId = Model.topics[ij].TopicID }, new { @class = "glyphicon glyphicon-download-alt", @role = "button" })
+                                                </div>
+                                            </div>
+
+                                        }
+                                    </div>
+                                    ij++;
+                                    if (ij >= Model.topics.Count)
+                                    {
+                                        break;
+                                    }
+
+                                }
+                            }
+                        }
+                    </div>
+                    @{i = ij - 1;
+                    }
+                    <div class="col-md-6">
+                        @{
+                            var topID = Model.topics[maintopicid].TopicID;
+                            var topicvotes = db.Votes.Where(a => a.topicID == topID).ToList();
+                            if (topicvotes.Count > 0)
+                            {
+                                <table class="table table-bordered table-responsive" style="text-align:center">
+                                    <thead class="thead-dark" style="text-align:center;">
+                                        <tr>
+                                            <th style="text-align:center">
+                                                Vote Description
+                                            </th>
+                                            <th style="text-align:center">
+                                                Vote Result
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tablebody">
+                                        @for (int j = 0; j < topicvotes.Count; j++)
+                                        {
+                                            int VoteID = topicvotes[j].VoteID;
+                                            var voteOptions = db.Options.Where(a => a.voteID == VoteID).ToList();
+                                            var voteOptionsord = from s in voteOptions
+                                                                 orderby s.OptionCount descending
+                                                                 select s;
+                                            <tr>
+                                                <td>
+                                                    <label>@topicvotes[j].VoteDescription</label>
+                                                </td>
+                                                <td>
+                                                    <label>@voteOptionsord.ElementAt(0).OptionDescription</label>
+                                                </td>
+                                            </tr>
+
+
+                                        }
+                                    </tbody>
+
+                                </table>}
+                        }
+                    </div>
+                </div>
+                                }
+
+
+
+
+
+
+                            }
+    }
+    <br /><div class="underlineCont"></div><br />
+
+    <div>
+
+        @{
+            int tasksCount = 0;
+            for (int i = 0; i < Model.user_meeting.Count; i++)
+            {
+                if ((@Model.user_meeting[i].Coordinator != true) && (@Model.user_meeting[i].AssignedTask != null || @Model.user_meeting[i].TaskDescription != null))
+                {
+                    tasksCount++;
+                }
+
+            }
+            if (tasksCount > 0)
+            {
+                <label class="Topic">Tasks</label><br />
+
+        <table class="table table-bordered table-responsive">
+            <thead class="thead-dark" style="text-align:center; background:#18bcaa; color:#fff; border-bottom:3px solid #0e2737">
+            <th>Name</th>
+            <th>Assigned Task</th>
+            <th>Task Description</th>
+            <th>Task Start Date</th>
+            <th>Task End Date</th>
+            <th>Task Status</th>
+            </thead>
+            <tbody class="tablebody">
+                @{for (int i = 0; i < Model.user_meeting.Count; i++)
+                    {
+                        if ((@Model.user_meeting[i].Coordinator != true) && (@Model.user_meeting[i].AssignedTask != null || @Model.user_meeting[i].TaskDescription != null))
+                        {
+                <tr>
+                    <td><label>@UserNames[i]</label></td>
+                    <td>@Model.user_meeting[i].AssignedTask</td>
+                    <td>@Model.user_meeting[i].TaskDescription</td>
+                    <td>@Model.user_meeting[i].TaskStartDate</td>
+                    <td>@Model.user_meeting[i].TaskEndDate</td>
+                    <td>@Model.user_meeting[i].TaskStatus</td>
+                </tr>
+                        }
+                    }
+
+                }
+            </tbody>
+        </table>
+                        }
+                    }
+    </div>
+    @if (Session["exportBtn"] == null)
+    {
+        <button onclick="RedirectToExport();" class="btn btn-info" style="background:rgb(245, 175, 41);color:#fff;font-weight:bold;border:none;float:right;width:150px;padding:10px;">Export</button>
+    }
+</div>
+
+
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+<script>
+    function RedirectToExport() {
+        window.open('@Url.Action("Export", "CurrMeeting", new { id = @Model.meeting.MeetingID })');
+        @*location.href = '@Url.Action("Export", "CurrMeeting",new { id = @Model.meeting.MeetingID })';*@
+    }
+    $(document).ready(function () {
+
+        $("#imageBrowes").change(function () {
+
+            var File = this.files;
+
+            if (File && File[0]) {
+                ReadImage(File[0]);
+            }
+
+        })
+
+
+    })
+
+
+    var ReadImage = function (file) {
+
+        var reader = new FileReader;
+        var image = new Image;
+
+        reader.readAsDataURL(file);
+        reader.onload = function (_file) {
+
+            image.src = _file.target.result;
+            image.onload = function () {
+
+                var height = this.height;
+                var width = this.width;
+                var type = file.type;
+                var size = ~~(file.size / 1024) + "KB";
+
+                $("#targetImg").attr('src', _file.target.result);
+                $("#description").text("Size:" + size + ", " + height + "X " + width + ", " + type + "");
+                $("#imgPreview").show();
+                $(".chooseimg").hide();
+                $('.agendaTitle').css('margin-top', '+=40px');
+            }
+
+        }
+
+    }
+
+    var ClearPreview = function () {
+        $("#imageBrowes").val('');
+        $("#description").text('');
+        $("#imgPreview").hide();
+        $(".chooseimg").show();
+        $('.agendaTitle').css('margin-top', '-=40px');
+
+    }
+
+</script>

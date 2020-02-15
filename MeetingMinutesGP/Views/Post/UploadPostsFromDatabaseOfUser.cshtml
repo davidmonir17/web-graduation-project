@@ -1,0 +1,114 @@
+﻿@using MeetingMinutesGP.Models;
+@model UserPost
+@{
+    ViewBag.Title = "UploadPostsFromDatabaseOfUser";
+}
+
+<style>
+        /*.header {
+        background-color: #1cc3b2;
+        padding: 10px;
+        margin: 10px;
+        width: 97.5%;
+        height: auto;
+        text-align: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px;
+    }*/
+        .header {
+            background-color: #808080;
+            padding: 15px;
+            height: auto;
+            text-align: center;
+            color: white;
+            /*font-size: 20px;
+            font-weight: bold;*/
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-bottom: 6px solid #18bcaa;
+        }
+            #mettTitle {
+            font-size: 24px;
+            font-weight: bold;
+        }
+     .btn {
+        color: white;
+        background-color: #1cc3b2;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        height: auto;
+        white-space: normal;
+        margin-bottom: 10px;
+    }
+    .noAnouncement{
+        font-size: 20px;
+        font-weight: bold;
+        text-align:left;
+        word-wrap: break-word;
+        height:auto;
+        margin:5%;
+        padding:10%;
+        box-shadow: 9px 10px 8px 10px #888888;
+        text-align:left;
+    }
+    .rig{
+        float:right;
+    }
+       .btn_pp{
+        color: white;
+        background-color: #808080;
+        border:none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 10%;
+        height: auto;
+        white-space: normal;
+        margin:10px;
+        left:2%;
+        min-width:10%;
+   }
+
+</style>
+<div class="col-sm-12 header" align="center">
+    <label id="mettTitle">Announcements Of @Model.user_name.Name</label><br />
+</div>
+@*<div class="col-sm-12 header" align="center"><strong>Announcements Of @Model.user_name.Name</strong></div>*@
+<div class="col-sm-2">
+    <button type="button" class="btn glyphicon glyphicon-plus rig" title="New Announcement" onclick="RedirectToPostPage();"></button>
+</div>
+<br>
+<br>
+<br>
+@for (var i = 0; i < Model.user_posts.Count; i++)
+{
+    if (@Model.user_posts[i].PostPrivacy.Equals("private"))
+    {
+        <button class="glyphicon glyphicon-lock btn_pp col-sm-2"title="Private"></button>
+    }
+    else
+    {
+        <button class="glyphicon glyphicon-eye-open btn_pp col-sm-2"title="Public"></button>
+    }<br><br>
+<div class="noAnouncement " style="padding:10px;margin:30px;box-shadow: rgb(158, 158, 158) 0px 0px 11px 0px;height:300px;height:auto;word-wrap: break-word;">
+@{
+    byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Model.user_posts[i].PostID.ToString());
+    string encyptedID = Convert.ToBase64String(encoded);
+    @Html.ActionLink(" ", "Edit_post", "Post", new { id = encyptedID }, new { @class = "glyphicon glyphicon-edit rig" })<br>
+    @Html.ActionLink(" ", "Delete_post", "Post", new { id = Model.user_posts[i].PostID }, new { @class = "glyphicon glyphicon-trash rig" })
+}<br>
+@Model.user_posts[i].PostContent
+</div>
+}
+
+<script>
+    function RedirectToPostPage() {
+        location.href = '@Url.Action("create", "Post")';
+    }
+</script>

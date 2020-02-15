@@ -1,0 +1,152 @@
+﻿@model MeetingMinutesGP.Models.MeetingMinutes
+
+@{
+    ViewBag.Title = "viewMeetingContent";
+
+}
+<style>
+    .meetingcontent {
+        border: 1px #eee solid;
+        padding: 0;
+        border-radius: 7px;
+        /*font-family: "Poppins", sans-serif;*/
+    }
+    /*#18bcaa*/
+    #meetingtitle {
+        background: #18bcaa;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 7px 7px 0 0;
+    }
+
+    .meetingcontentnottitle {
+        padding: 25px 40px;
+    }
+
+    #mettTitle {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    #agendatitle {
+        font-size: 18px;
+        font-weight: bold;
+        padding: 8px 0;
+    }
+</style>
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6  meetingcontent">
+        @*<h2>Meeting Content</h2>*@
+        <div id="meetingtitle">
+            <label id="mettTitle">@Model.agenda.Title</label><br />
+            <label>@Model.meeting.MeetingDate</label>
+        </div>
+        <div class="meetingcontentnottitle">
+            @*<label>Meeting Title: </label>*@
+            @*@Html.TextBoxFor(m => m.agenda.Title, new { @class = "form-control", @required = "required" })*@
+
+            @*<label>Start Date: </label>*@
+            @*@Html.TextBoxFor(m => m.meeting.MeetingDate, new { type = "datetime-local", @class = "form-control", @required = "required", @id = "date" })*@
+            <label>Duration(Hours): </label>
+            <label>@Model.meeting.MeetingDuration</label><br />
+            @*@Html.TextBoxFor(m => m.meeting.MeetingDuration, new { @class = "form-control", @required = "required" })*@
+            <label>Leader: </label>
+            <label>@Model.UserEmail</label><br />
+            @*@Html.TextBoxFor(m => m.UserEmail, new { @readonly = "readonly", @class = "form-control" })*@
+            <label id="agendatitle">Participants: </label><br />
+            @for (int i = 0; i < Model.UserMeeting.Count; i++)
+            {
+
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @Model.UserMeeting[i].Email</label><br />
+            }
+            <label id="agendatitle">Agenda</label><br />
+            @{
+                int counter = 1;
+                for (int i = 0; i < Model.topics.Count; i++)
+                {
+                    if (Model.topics[i].subTopicId != null)
+                    {
+                        int spacecount = 0;
+
+                        for (int j = 0; j < (Model.topics[i].TopicName).Length; j++)
+                        {
+                            if (Model.topics[i].TopicName[j] == '.')
+                            {
+                                Model.topics[i].TopicName = Model.topics[i].TopicName.Remove(j, 1);
+                                spacecount += 25;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        if (Model.topics[i].TopicName[0] == '.')
+                        {
+                            Model.topics[i].TopicName = Model.topics[i].TopicName.Remove(0, 1);
+                            spacecount += 25;
+                        }
+                        <br /><br />
+                        <div style="margin-left: @(spacecount)px">
+                            @{
+
+                                <label><strong>@Model.topics[i].TopicName</strong></label><br />
+                                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Topic Description: @(Model.topics[i].TopicDescription)</label><br />
+                                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planned time: @(Model.topics[i].TopicTime) min.</label><br />
+
+
+
+                                if (Model.topics[i].FileLocation != null)
+                                {
+                                    string fileLoc = Model.topics[i].FileLocation;
+                                    string[] name = fileLoc.Split('\\');
+                                    string fileName = name[name.Count() - 1];
+
+                                    <div class="file_div">
+                                        <div>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            @Html.ActionLink(fileName, "Action", "Agenda", new { TopicId = Model.topics[i].TopicID }, new { @class = "glyphicon glyphicon-download-alt", @role = "button" })
+                                        </div>
+                                    </div>
+
+                                }
+
+                            }
+                        </div>
+
+                                }
+                                else
+                                {
+                                    <hr />
+                                    <label><strong>@counter. @Model.topics[i].TopicName</strong></label><br />
+                                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Topic Description: @(Model.topics[i].TopicDescription)</label><br />
+                                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planned time: @(Model.topics[i].TopicTime) min.</label><br />
+
+
+                                    counter++;
+                                    if (Model.topics[i].FileLocation != null)
+                                    {
+                                        string fileLoc = Model.topics[i].FileLocation;
+                                        string[] name = fileLoc.Split('\\');
+                                        string fileName = name[name.Count() - 1];
+
+                                        <div class="file_div">
+                                            <div>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                @Html.ActionLink(fileName, "Action", "Agenda", new { TopicId = Model.topics[i].TopicID }, new { @class = "glyphicon glyphicon-download-alt", @role = "button" })
+                                            </div>
+                                        </div>
+
+                                        }
+                                    }
+
+                                }
+            }
+        </div>
+
+    </div>
+
+    <div class="col-md-3"></div>
+</div>

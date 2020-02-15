@@ -1,0 +1,8 @@
+delete from Notification where 1 = 1
+delete from Vote where 1 = 1
+delete from Options where 1 = 1
+delete from Topic where 1 = 1
+delete from UserMeeting where 1 = 1
+delete from Agenda where 1 = 1
+delete from Meeting where 1 = 1
+delete from Location where 1 = 1

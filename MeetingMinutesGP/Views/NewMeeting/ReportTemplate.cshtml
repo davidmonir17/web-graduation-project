@@ -1,0 +1,61 @@
+﻿@model IEnumerable<MeetingMinutesGP.Models.Topic>
+
+@{
+    ViewBag.Title = "ReportTemplate";
+}
+<head>
+    <style type="text/css">
+        body {
+            padding-top: 50px;
+            padding-bottom: 20px;
+            background-image: url("F://college//sana 4//sem2//gp//New folder//MeetingMinutesGP//MeetingMinutesGP//Content//Images//reportimage.jpg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <br />
+    <div>
+        <h1 style="align-content:center ;color:#ded0d0; font-size:25px;"><strong> Report Tamplet </strong></h1>
+    </div>
+    <div>
+
+        <ul typeof="circle" style="font-size:20px;font-style:italic;">
+            <li>Agenda Title: @ViewData["total"] </li>
+            <li>Meeting Id:@ViewData["total1"] </li>
+            <li>Meeting Date: @ViewData["MeetingDate"] </li>
+            <li> Meeting Location: @ViewData["MeetingLocation"]</li>
+            <li>Meeting Duration:@ViewData["MeetingDuration"] </li>
+        </ul>
+
+
+    </div>
+    <br />
+    <h1 style="align-content:center ;color:#ded0d0;font-size:25px;"><strong>Agenda:</strong> </h1>
+    <div tab-size:15;font-size:20px;">
+
+        <table border="1" style="background-color:rgba(221, 221, 221, 0.33);">
+            <tr style="color:#717f86">
+                <th colspan="2"><strong>Topic Name </strong></th>
+                <th colspan="2"><strong>Topic Describtion</strong></th>
+                <th><strong>Topic time</strong></th>
+            </tr>
+            @foreach (var topics in Model)
+            {
+                <tr>
+                    <td colspan="2">@topics.TopicName</td>
+                    <td colspan="2">@topics.TopicDescription</td>
+                    <td>@topics.TopicTime (hours)</td>
+                </tr>
+            }
+        </table>
+    </div>
+
+
+</body>

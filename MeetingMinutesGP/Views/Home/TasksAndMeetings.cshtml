@@ -1,0 +1,2034 @@
+﻿@model MeetingMinutesGP.Models.Meetings
+
+<style>
+    .form-control {
+        width: 90%;
+    }
+
+    #meetings, #listTasks {
+        max-height: 300px;
+        overflow: auto;
+    }
+
+    #checkboxes {
+        display: none;
+        border: 1px #dadada solid;
+        background-color: white;
+        width: fit-content;
+    }
+
+        #checkboxes label {
+            display: block;
+        }
+
+            #checkboxes label:hover {
+                background-color: #1e90ff;
+            }
+</style>
+<!-- Material Design Bootstrap -->
+<link href="~/Content/mdb.min.css" rel="stylesheet">
+<!-- kendo-ui -->
+<!-- <base href="https://demos.telerik.com/kendo-ui/datetimepicker/index">  -->
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.common-material.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.material.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.1.220/styles/kendo.material.mobile.min.css" />
+
+<!-- SCRIPTS -->
+<!-- SweetAlert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!-- JQuery -->
+<script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="~/Scripts/popper.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="~/Scripts/mdb.min.js"></script>
+<!-- kendo-ui -->
+<script src="https://kendo.cdn.telerik.com/2019.1.220/js/jquery.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2019.1.220/js/kendo.all.min.js"></script>
+
+@{
+    ViewBag.Title = "Home Page";
+    List<string> taskStatus = new List<string>() { "In progress", "Put on hold", "Cancelled", "Completed" };
+
+}
+
+<br /><br />
+<!-- Meeting inputs -->
+<div class="card">
+    <div class="card-header" style="background-color:#E6E6E6;">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="md-form form-group" style="font-size:24px;margin-left:15px">
+                    Upcoming Meetings
+                    <a href="/NewMeeting/Meeting_Form" id="newMeeting" class="glyphicon glyphicon-plus-sign" title="Meeting Later"></a>
+                    @*&nbsp;&nbsp;&nbsp;<a href="/MeetingNow/MeetingInformation" class="glyphicon glyphicon-plus-sign" title="Meeting Now"></a>*@
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="md-form form-group">
+                    <select id="options" class="form-control" style="border: 0;border-bottom: 2px solid #03A9B0;float: right;margin-right: 10px;">
+                        <option value="today">Today</option>
+                        <option value="today and tomorrow">Today and Tomorrow</option>
+                        <option value="next 7 days">Next 7 days</option>
+                        <option value="all" selected>All</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <ul id="meetings" class="list-group list-group-flush"></ul>
+</div>
+
+
+<br />
+<!--Tasks-->
+<div class="card">
+    <div class="card-header" style="background-color:#E6E6E6;">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="md-form form-group" style="font-size:24px;margin-left:15px">
+                    Tasks
+                    <a href="#" id="newTask" class="glyphicon glyphicon-plus-sign" title="New Task" data-toggle="modal" data-target="#exampleModalCenter"></a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+
+                    <div class="taskStatus" style="position:absolute;z-index:2;width:100%">
+                        <select onclick="showCheckboxes()" id="select" class="form-control" style="border: 0;border-bottom: 2px solid #03A9B0;width:85%;background-color:transparent;margin-top: 12px;height: auto;"></select>
+                        <div id="checkboxes">
+                            <label for="Not Started">
+                                <input type="checkbox" id="Not Started" checked />Not Started
+                            </label>
+                            <label for="In Progress">
+                                <input type="checkbox" id="In Progress" />In Progress
+                            </label>
+                            <label for="Put on hold">
+                                <input type="checkbox" id="Put on hold" />Put In Hold
+                            </label>
+                            <label for="Cancelled">
+                                <input type="checkbox" id="Cancelled" />Cancelled
+                            </label>
+                            <label for="Completed">
+                                <input type="checkbox" id="Completed" />Completed
+                            </label>
+                        </div>
+                    </div>
+                    <select style="opacity:0;margin-bottom:22px"></select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form form-group">
+                    <select id="creation_date" title="Creation Date" class="form-control" style="border: 0;border-bottom: 2px solid #03A9B0">
+                        <option value="Last Month">Last Month</option>
+                        <option value="Last 3 Months">Last 3 Months</option>
+                        <option value="Last 6 Months">Last 6 Months</option>
+                        <option value="Last Year">Last Year</option>
+                        <option value="All Dates" selected>All Dates</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form form-group">
+                    <select id="task_type" title="Type" class="form-control" style="border: 0;border-bottom: 2px solid #03A9B0">
+                        <option value="All Tasks">All Tasks</option>
+                        <option value="Meeting Tasks">Meeting Tasks</option>
+                        <option value="Peronal Tasks" selected>Peronal Tasks</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" style="background-color:#F0F0F0;margin:0">
+            <div class="col-md-3" style="font-weight:bold">
+                <div class="md-form form-group">
+                    Task
+                </div>
+            </div>
+            <div class="col-md-3" style="font-weight:bold">
+                <div class="md-form form-group">
+                    Status
+                </div>
+            </div>
+            <div class="col-md-3" style="font-weight:bold">
+                <div class="md-form form-group">
+                    Creation Date
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="md-form form-group" style="font-weight:bold">
+                    Due Date
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <ul id="listTasks" class="list-group list-group-flush"></ul>
+</div>
+
+<br /><br />
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <!-- <div class="modal-header" style="background-color:#03A9B0;">
+                <h3 class="modal-title" id="exampleModalLongTitle" style="color:white;"><strong>Create Task</strong></h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> -->
+            @using (@Html.BeginForm("AsssignTask", "Home"))
+            {
+                <div class="modal-body">
+
+                    <!-- Personal task -->
+                    <div class="card">
+                        <div class="card-header" style="background-color:#03A9B0; height:70px;">
+                            <h3 style="padding: 20px; width:200px; color:white;">Create Task</h3>
+                        </div>
+                        <!-- Task inputs -->
+                        <ul id="agenda" class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <!-- Task name input -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form form-group form-lg">
+                                            @Html.TextBoxFor(m => m.newPersonalTask.TaskName, new { @id = "titleLGEx", @class = "form-control form-control-lg", @required = "required" })
+                                            <label for="titleLGEx">Task name*</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Task description input -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form form-group form-lg">
+                                            @Html.TextBoxFor(m => m.newPersonalTask.TaskDescription, new { @class = "form-control", @placeholder = "Task description" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Task owner email input -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form form-group form-lg">
+                                            @Html.TextBoxFor(m => m.newPersonalTask.TaskOwnerEmail, new { @class = "form-control", @placeholder = "Task owner email*", @required = "required" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Task end date input -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form form-group form-lg demo-section k-content">
+                                            <h6>Task end date</h6>
+                                            <input type="datetime-local" name="newPersonalTask.TaskEndDate" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Task status input -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="md-form form-group form-lg">
+                                            <h6>Task Status</h6>
+                                            @Html.TextBoxFor(m => m.newPersonalTask.TaskStatus, new { @Value = "Not started", @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    function deleteMeeting(){
+
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this imaginary file!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+.then((willDelete) => {
+    if (willDelete) {
+        swal("Poof! Your imaginary file has been deleted!", {
+            icon: "success",
+        });
+    } else {
+        swal("Your imaginary file is safe!");
+    }
+});
+    }
+    ////Voice commands
+    var recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    $(document).ready(function () {
+        recognition.onresult = function(event) {
+            console.log(event);
+            for(var i=0; i<event.results.length; i++){
+                if (event.results[i][0].transcript == "meeting" || event.results[i][0].transcript == "Meeting" || event.results[i][0].transcript == "agenda" || event.results[i][0].transcript == "Agenda") {
+                    document.getElementById("newMeeting").click();
+                }
+                else if (event.results[i][0].transcript == "Task" ||event.results[i][0].transcript == "Tusk" || event.results[i][0].transcript == "desk" ||event.results[i][0].transcript == "do" ||event.results[i][0].transcript == "task") {
+                    document.getElementById("newTask").click();
+                }
+            }
+        }
+        recognition.start();
+    });
+
+    ////Due dateTime
+    $(document).ready(function () {
+        // create DateTimePicker from input HTML element
+        $("#datetimepicker").kendoDateTimePicker({
+            value: new Date(),
+            dateInput: true
+        });
+    });
+    var meetings = document.getElementById("meetings"),
+        options = document.getElementById("options"),
+        arr = [],
+        link_agenda="",
+        link_edit="",
+        link_delete="",
+        address="",
+        floor,
+        room,
+        user_count,
+        status_select = document.getElementById("status"),
+        creation_date_select = document.getElementById("creation_date"),
+        task_type_select = document.getElementById("task_type"),
+        listTasks = document.getElementById("listTasks"),
+        checkboxes = document.getElementById("checkboxes").getElementsByTagName("input"),
+        checkboxeArr = [],
+       selectCheck = document.getElementById("select"),
+        childDivTasks = listTasks.getElementsByTagName("div");
+
+
+    NotstartedCheckBoxDefault();
+    personalTasksCreation();
+    optionAll();
+    options.options[3].setAttribute("selected","selected");
+
+    options.onchange = function () {
+
+        if (options.options[0].selected) {
+
+            if(meetings.childElementCount>0)
+            {
+
+                while(meetings.firstChild)
+                {
+                    meetings.removeChild(meetings.firstChild);
+                }
+            }
+            @for (var i = 0; i < Model.meetings.Count; i++)
+            {
+                @:floor = null;
+                                                                                                                                                                                                                                                                        @:room=null;
+                                                                                                                                                                                                                                                                        @:link_edit = null;
+                                                                                                                                                                                                                                                                        @:link_delete = null;
+                                                                                                                                                                                                                                                                            DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+                byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Model.meetings[i].MeetingID.ToString());
+                string encryptedID = Convert.ToBase64String(encoded);
+                if (DateTime.Compare(date, Model.meetings[i].MeetingDate) >= 0)
+                {
+                    if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) < 0) {
+
+                        @:link_agenda="/Agenda/Index/@encryptedID";
+
+                    }
+                    if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) >= 0) {
+                        @:link_agenda="/CurrMeeting/startMeeting/@Model.meetings[i].MeetingID";
+                                                                                                                                                                                                                                                                                                                                                                                                                        }
+
+                    for (var k = 0; k < Model.loc.Count; k++) {
+                        if (Model.meetings[i].locationID == Model.loc[k].LocationID) {
+                             @:address = '@Model.loc[k].Address';
+                                                                                                                                                                                                                                                                                                                                                                 if (Model.loc[k].Floor != null) {
+                                 @:floor = @Model.loc[k].Floor;
+                                                                                                                                                                                                                                                                                                                                                                }
+                            if (Model.loc[k].RoomNumber != null) {
+                                  @:room = @Model.loc[k].RoomNumber;
+                                                                                                                                                                                                                                                                                                                                                    }
+
+
+                            break;
+                        }
+                    }
+
+                    for (var j = 0; j < Model.users.Count; j++) {
+
+                        if (Model.meetings[i].MeetingID == Model.users[j].MeetingID) {
+                            @: user_count = @Model.users[j].Email.Count;
+                                                                                                                                                                                                                                                                                                                                                                                                                             for (var m = 0; m < Model.users[j].Email.Count; m++) {
+                                if (Model.users[j].Email[m] == Model.CurrentUserEmail) {
+                                    @:link_edit = '/Home/EditMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                                                                                                                                     @:link_delete = '/Home/DeleteMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                                                                                                                                      break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    @:createDiv(('@Model.agendas[i].Title'),('@Model.meetings[i].MeetingDate'),(@Model.meetings[i].MeetingDuration),link_agenda,link_edit,link_delete,address,floor,room,user_count);
+
+
+                }
+
+
+            }
+
+        }
+        if(options.options[1].selected)
+        {
+            if(meetings.childElementCount>0)
+            {
+                while(meetings.firstChild)
+                {
+                    meetings.removeChild(meetings.firstChild);
+                }
+            }
+            @for (var i = 0; i < Model.meetings.Count; i++)
+            {
+                @:floor = null;
+                                                                                                                                                                                                                                                                                    @:room=null;
+                                                                                                                                                                                                                                                                                     @:link_edit = null;
+                                                                                                                                                                                                                                                                        @:link_delete = null;
+                                                                                                                                                                                                                                                                                        DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+                byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Model.meetings[i].MeetingID.ToString());
+                string encryptedID = Convert.ToBase64String(encoded);
+                if ((DateTime.Compare(date, Model.meetings[i].MeetingDate) >= 0) || (DateTime.Compare(date.AddDays(1.0), Model.meetings[i].MeetingDate) >= 0))
+                {
+                    if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) < 0)
+                    {
+
+                        @:link_agenda="/Agenda/Index/@encryptedID";
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                    if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) >= 0) {
+                        @:link_agenda="/CurrMeeting/startMeeting/@Model.meetings[i].MeetingID";
+                                                                                                                                                                                                                                                                                                                                                                                                                            }
+                    for (var k = 0; k < Model.loc.Count; k++) {
+                        if (Model.meetings[i].locationID == Model.loc[k].LocationID) {
+                             @:address = '@Model.loc[k].Address';
+                                                                                                                                                                                                                                                                                                                                                   if (Model.loc[k].Floor != null) {
+                                 @:floor = @Model.loc[k].Floor;
+                                                                                                                                                                                                                                                                                                                                                                }
+                            if (Model.loc[k].RoomNumber != null) {
+                                  @:room = @Model.loc[k].RoomNumber;
+                                                                                                                                                                                                                                                                                                                                                    }
+                            break;
+                        }
+                    }
+
+                    for (var j = 0; j < Model.users.Count; j++) {
+
+                        if (Model.meetings[i].MeetingID == Model.users[j].MeetingID) {
+                            @: user_count = @Model.users[j].Email.Count;
+                                                                                                                                                                                                                                                                                                                                                                                                                 for (var m = 0; m < Model.users[j].Email.Count; m++) {
+                                if (Model.users[j].Email[m] == Model.CurrentUserEmail) {
+                                    @:link_edit = '/Home/EditMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                                                                                                                                                                        @:link_delete = '/Home/DeleteMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                                                                                                                                                                        break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    @:createDiv(('@Model.agendas[i].Title'),('@Model.meetings[i].MeetingDate'),(@Model.meetings[i].MeetingDuration),link_agenda,link_edit,link_delete,address,floor,room,user_count);
+
+
+                }
+
+            }
+        }
+        if(options.options[2].selected)
+        {
+
+            if(meetings.childElementCount>0)
+            {
+                while(meetings.firstChild)
+                {
+                    meetings.removeChild(meetings.firstChild);
+                }
+            }
+            @for (var i = 0; i < Model.meetings.Count; i++)
+            {
+                @:floor = null;
+                                                                                                                                                                                                                                                                                                    @:room=null;
+                                                                                                                                                                                                                                                                         @:link_edit = null;
+                                                                                                                                                                                                                                                                        @:link_delete = null;
+                                                                                                                                                                                                                                                                                                    DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+                byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Model.meetings[i].MeetingID.ToString());
+                string encryptedID = Convert.ToBase64String(encoded);
+                if ((DateTime.Compare(date.AddDays(7.0), Model.meetings[i].MeetingDate) >= 0))
+                {
+                    if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) < 0) {
+
+                        @:link_agenda="/Agenda/Index/@encryptedID";
+                                                                                                                                                                                                                                                                                                                                                                                                           }
+                    if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) >= 0) {
+                        @:link_agenda="/CurrMeeting/startMeeting/@Model.meetings[i].MeetingID";
+                                                                                                                                                                                                                                                                                                                                                                                                           }
+                    for (var k = 0; k < Model.loc.Count; k++) {
+                        if (Model.meetings[i].locationID == Model.loc[k].LocationID) {
+                             @:address = '@Model.loc[k].Address';
+                                                                                                                                                                                                                                                                                                                                                    if (Model.loc[k].Floor != null) {
+                                 @:floor = @Model.loc[k].Floor;
+                                                                                                                                                                                                                                                                                                                                                    }
+                            if (Model.loc[k].RoomNumber != null) {
+                                  @:room = @Model.loc[k].RoomNumber;
+                                                                                                                                                                                                                                                                                                                                        }
+                            break;
+                        }
+                    }
+
+                    for (var j = 0; j < Model.users.Count; j++) {
+
+                        if (Model.meetings[i].MeetingID == Model.users[j].MeetingID) {
+                            @: user_count = @Model.users[j].Email.Count;
+                                                                                                                                                                                                                                                                                                                                                                                                     for (var m = 0; m < Model.users[j].Email.Count; m++) {
+                                if (Model.users[j].Email[m] == Model.CurrentUserEmail) {
+                                    @:link_edit = '/Home/EditMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                                                                                                                                    @:link_delete = '/Home/DeleteMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                                                                                                                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    @:createDiv(('@Model.agendas[i].Title'),('@Model.meetings[i].MeetingDate'),(@Model.meetings[i].MeetingDuration),link_agenda,link_edit,link_delete,address,floor,room,user_count);
+
+
+
+                }
+
+            }
+        }
+        if(options.options[3].selected)
+        {
+            optionAll();
+
+        }
+    }
+
+    function createDiv(title, date,duration,linkAgenda,linkEdit,linkDelete,Address,Floor,Room,userCount) {
+
+        var a = document.createElement("a"),
+            strong_title = document.createElement("strong"),
+            strong_date = document.createElement("strong");
+        strong_title.appendChild(document.createTextNode(title));
+        strong_date.appendChild(document.createTextNode(date + " ( " + duration.toString() + " hours ) "));
+        a.appendChild(strong_title);
+        a.appendChild(document.createElement("br"));
+        a.appendChild(strong_date);
+
+        a.setAttribute("href",linkAgenda);
+
+        var newLi = document.createElement("li");
+        newLi.setAttribute("class", "list-group-item");
+
+        var newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        var col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+
+        var formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+
+        formGroup.appendChild(a);
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newLi.appendChild(newRow);
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        if(Floor ==null&&Room==null)
+        {
+            formGroup.appendChild(document.createTextNode(Address));
+        }
+        else if(Floor ==null && Room !=null)
+        {
+            formGroup.appendChild(document.createTextNode(Address +" , "+ "Room : " + Room));
+        }
+        else if(Floor != null && Room==null)
+        {
+            formGroup.appendChild(document.createTextNode(Address + " , "+ "Floor : " + Floor));
+        }
+        else if(Floor !=null && Room!=null)
+        {
+            formGroup.appendChild(document.createTextNode(Address +" , "+ "Floor :" + Floor +" Room : " + Room));
+        }
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newLi.appendChild(newRow);
+
+        var a_user = document.createElement("a"),
+            a_edit = document.createElement("a"),
+            a_delete = document.createElement("a");
+
+        a_user.setAttribute("href","#");
+        a_user.setAttribute("class","glyphicon glyphicon-user");
+        a_edit.setAttribute("href",link_edit);
+        a_edit.setAttribute("class","glyphicon glyphicon-edit");
+        a_delete.setAttribute("href",link_delete);
+        a_delete.setAttribute("class","glyphicon glyphicon-trash");
+        a_delete.setAttribute("onclick","deleteMeeting()");
+
+        col4 = document.createElement("div");
+        col4.setAttribute("class", "col-md-4");
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(document.createTextNode(userCount + "  "));
+        formGroup.appendChild(a_user);
+
+        if(link_edit!=null && link_delete!=null)
+        {
+            formGroup.appendChild(document.createTextNode( '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0' ));
+            formGroup.appendChild(a_edit);
+            formGroup.appendChild(document.createTextNode( '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0' ));
+            formGroup.appendChild(a_delete);
+        }
+        col4.appendChild(formGroup);
+        newRow.appendChild(col4);
+        newLi.appendChild(newRow);
+
+        meetings.appendChild(newLi);
+    }
+
+    function createHr(){
+        var hr = document.createElement("hr");
+        meetings.appendChild(hr);
+    }
+
+    function optionAll()
+    {
+        if(meetings.childElementCount>0)
+        {
+            while(meetings.firstChild)
+            {
+                meetings.removeChild(meetings.firstChild);
+            }
+        }
+
+        @for (var i = 0; i < Model.meetings.Count; i++)
+
+        {
+            @:floor = null;
+                                                                                                                                                                                                            @:room=null;
+                                                                                                                                                                                                             @:link_edit = null;
+                                                                                                                                                                                    @:link_delete = null;
+                                                                                                                                                                                                            byte[] encoded = System.Text.Encoding.UTF8.GetBytes(Model.meetings[i].MeetingID.ToString());
+            string encryptedID = Convert.ToBase64String(encoded);
+            if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) < 0) {
+
+                    @:link_agenda="/Agenda/Index/@encryptedID";
+                                                                                                                                                                                                                                                }
+            if (DateTime.Compare(DateTime.Now, Model.meetings[i].MeetingDate) >= 0) {
+                    @:link_agenda="/CurrMeeting/startMeeting/@Model.meetings[i].MeetingID";
+                                                                                                                                                                                                                                                }
+            for (var k = 0; k < Model.loc.Count; k++) {
+                if (Model.meetings[i].locationID == Model.loc[k].LocationID) {
+                        @:address = '@Model.loc[k].Address';
+                                                                                                                                                                                                                              if (Model.loc[k].Floor != null) {
+                                 @:floor = @Model.loc[k].Floor;
+                                                                                                                                                                                                                                        }
+                    if (Model.loc[k].RoomNumber != null) {
+                                  @:room = @Model.loc[k].RoomNumber;
+                                                                                                                                                                                                                            }
+                    break;
+                }
+            }
+
+            for (var j = 0; j < Model.users.Count; j++) {
+
+                if (Model.meetings[i].MeetingID == Model.users[j].MeetingID) {
+                        @: user_count = @Model.users[j].Email.Count;
+                                                                                                                                                                                                                                                        for (var m = 0; m < Model.users[j].Email.Count; m++) {
+                        if (Model.users[j].Email[m] == Model.CurrentUserEmail) {
+                                @:link_edit = '/Home/EditMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                @:link_delete = '/Home/DeleteMeeting/@encryptedID';
+                                                                                                                                                                                                                                                                break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+                @:createDiv(('@Model.agendas[i].Title'),('@Model.meetings[i].MeetingDate'),(@Model.meetings[i].MeetingDuration),link_agenda,link_edit,link_delete,address,floor,room,user_count);
+
+
+
+        }
+    }
+
+    window.onhashchange = function() {
+        window.location.reload();
+    }
+
+
+    //task code
+
+
+
+    function inprogressCheckBoxDefault()
+    {
+
+        if(checkboxeArr.length>0)
+        {
+            selectCheck.firstElementChild.remove();
+
+        }
+        checkboxeArr.push("In progress");
+        createHiddenOption();
+        selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+
+
+
+    }
+
+    function putInHoldCheckBoxDefault()
+    {
+
+        if(checkboxeArr.length>0)
+        {
+            selectCheck.firstElementChild.remove();
+        }
+        checkboxeArr.push("Put on hold");
+        createHiddenOption();
+        selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+
+    }
+
+    function CancelledCheckBoxDefault()
+    {
+
+        if(checkboxeArr.length>0)
+        {
+            selectCheck.firstElementChild.remove();
+        }
+        checkboxeArr.push("Cancelled");
+        createHiddenOption();
+        selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+
+    }
+
+    function CompletedCheckBoxDefault()
+    {
+
+        if(checkboxeArr.length>0)
+        {
+            selectCheck.firstElementChild.remove();
+        }
+        checkboxeArr.push("Completed");
+        createHiddenOption();
+        selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+
+
+    }
+
+    function NotstartedCheckBoxDefault()
+    {
+
+        if(checkboxeArr.length>0)
+        {
+            selectCheck.firstElementChild.remove();
+
+        }
+
+        checkboxeArr.push("Not started");
+        createHiddenOption();
+        selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+
+    }
+    task_type_select.onchange = function() {
+
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+    }
+
+    creation_date_select.onchange = function() {
+
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+
+    }
+
+    checkboxes[0].onchange = function() {
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+        if(checkboxes[0].checked == true)
+        {
+
+            NotstartedCheckBoxDefault();
+
+
+        }
+        if(checkboxes[0].checked != true)
+        {
+
+            checkboxeArr.splice(checkboxeArr.indexOf("Not started"),1);
+
+            selectCheck.firstElementChild.remove();
+            if(checkboxeArr.length>0)
+            {
+                createHiddenOption();
+                selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+            }
+
+
+           // cleanTasksStatusView("Not started");
+
+        }
+
+    }
+
+    checkboxes[1].onchange = function() {
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+        if(checkboxes[1].checked == true)
+        {
+            inprogressCheckBoxDefault();
+
+        }
+        if(checkboxes[1].checked != true)
+        {
+
+            checkboxeArr.splice(checkboxeArr.indexOf("In progress"),1);
+
+            selectCheck.firstElementChild.remove();
+            if(checkboxeArr.length>0)
+            {
+                createHiddenOption();
+                selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+            }
+
+
+            //cleanTasksStatusView("In progress");
+        }
+
+    }
+    checkboxes[2].onchange = function() {
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+        if(checkboxes[2].checked == true)
+        {
+            putInHoldCheckBoxDefault();
+
+        }
+        if(checkboxes[2].checked != true)
+        {
+            checkboxeArr.splice(checkboxeArr.indexOf("Put on hold"),1);
+
+            selectCheck.firstElementChild.remove();
+            if(checkboxeArr.length>0)
+            {
+                createHiddenOption();
+                selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+            }
+
+
+          //  cleanTasksStatusView("Put on hold");
+        }
+
+    }
+    checkboxes[3].onchange = function() {
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+        if(checkboxes[3].checked == true)
+        {
+            CancelledCheckBoxDefault();
+
+        }
+        if(checkboxes[3].checked != true)
+        {
+            checkboxeArr.splice(checkboxeArr.indexOf("Cancelled"),1);
+
+            selectCheck.firstElementChild.remove();
+            if(checkboxeArr.length>0)
+            {
+                createHiddenOption();
+                selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+            }
+
+
+            //cleanTasksStatusView("Cancelled");
+        }
+
+    }
+
+    checkboxes[4].onchange = function() {
+        if(task_type_select.options[0].selected)
+        {
+            cleanTasksView();
+            personalTasksCreation();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[1].selected)
+        {
+            cleanTasksView();
+            meetingTasksCreation();
+        }
+        if(task_type_select.options[2].selected)
+        {
+
+            cleanTasksView();
+            personalTasksCreation();
+        }
+        if(checkboxes[4].checked == true)
+        {
+
+            CompletedCheckBoxDefault();
+
+        }
+        if(checkboxes[4].checked != true)
+        {
+            checkboxeArr.splice(checkboxeArr.indexOf("Completed"),1);
+
+            selectCheck.firstElementChild.remove();
+            if(checkboxeArr.length>0)
+            {
+                createHiddenOption();
+                selectCheck.firstElementChild.appendChild(document.createTextNode(checkboxeArr));
+            }
+
+
+            //cleanTasksStatusView("Completed");
+        }
+
+    }
+
+    function createTask(taskName,status,startDate,endDate,taskID)
+    {
+
+        var newLi = document.createElement("li");
+        newLi.setAttribute("class", "list-group-item");
+
+        var newRow = document.createElement("div");
+        newRow.setAttribute("class", "row");
+
+        var col3 = document.createElement("div");
+        col3.setAttribute("class", "col-md-3");
+
+        var formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(document.createTextNode(taskName));
+        col3.appendChild(formGroup);
+        newRow.appendChild(col3);
+
+        col3 = document.createElement("div");
+        col3.setAttribute("class", "col-md-3");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(document.createTextNode(status));
+        col3.appendChild(formGroup);
+        newRow.appendChild(col3);
+
+        col3 = document.createElement("div");
+        col3.setAttribute("class", "col-md-3");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(document.createTextNode(startDate));
+        col3.appendChild(formGroup);
+        newRow.appendChild(col3);
+
+        col3 = document.createElement("div");
+        col3.setAttribute("class", "col-md-3");
+
+        formGroup = document.createElement("div");
+        formGroup.setAttribute("class", "md-form form-group");
+
+        formGroup.appendChild(document.createTextNode(endDate));
+        col3.appendChild(formGroup);
+        newRow.appendChild(col3);
+
+        newLi.appendChild(newRow);
+        listTasks.appendChild(newLi);
+
+    }
+
+
+    var expanded = false;
+
+    function showCheckboxes() {
+        var checkboxes = document.getElementById("checkboxes");
+        if (!expanded) {
+            checkboxes.style.display = "block";
+            expanded = true;
+        } else {
+            checkboxes.style.display = "none";
+            expanded = false;
+        }
+    }
+
+    function createHiddenOption(){
+        var option = document.createElement("option");
+        option.setAttribute("hidden","hidden");
+        selectCheck.appendChild(option);
+    }
+
+    function cleanTasksView()
+    {
+
+        if(listTasks.childElementCount>0)
+        {
+            while(listTasks.firstChild)
+            {
+                listTasks.removeChild(listTasks.firstChild);
+            }
+        }
+    }
+    function cleanTasksStatusView(status)
+    {
+        var child = document.getElementsByClassName("statusss");
+        for(var i=child.length-1;i>=0;i--)
+        {
+
+            if(child[i].textContent == status)
+            {
+                listTasks.removeChild(child[i].parentNode);
+            }
+        }
+    }
+    function personalTasksCreation(){
+        if(creation_date_select.options[0].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i = 0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year))
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "Not started")
+                        {
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i = 0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year))
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "In progress")
+                        {
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+                    }
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i = 0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year))
+                   {
+                       if(Model.AllPersonalTasks[i].TaskStatus == "Put on hold")
+                       {
+                           @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                       }
+                   }
+               }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i = 0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year))
+                   {
+                       if(Model.AllPersonalTasks[i].TaskStatus == "Cancelled")
+                       {
+                           @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                       }
+                   }
+               }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i = 0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year))
+                   {
+                       if(Model.AllPersonalTasks[i].TaskStatus == "Completed")
+                       {
+                           @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                       }
+                   }
+               }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i = 0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year))
+                   {
+
+                       @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                   }
+               }
+            }
+        }
+        else if(creation_date_select.options[1].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                        {
+                            if(Model.AllPersonalTasks[i].TaskStatus == "Not started")
+                            {
+                              @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                       {
+                           if(Model.AllPersonalTasks[i].TaskStatus == "In progress")
+                           {
+                               @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                           }
+                       }
+
+                   }
+               }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                       {
+                           if(Model.AllPersonalTasks[i].TaskStatus == "Put on hold")
+                           {
+                               @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                           }
+                       }
+
+                   }
+               }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                       {
+                           if(Model.AllPersonalTasks[i].TaskStatus == "Cancelled")
+                           {
+                               @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                           }
+                       }
+
+                   }
+               }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                       {
+                           if(Model.AllPersonalTasks[i].TaskStatus == "Completed")
+                           {
+                               @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                           }
+                       }
+
+                   }
+               }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                       {
+
+                               @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                                                       }
+
+                   }
+               }
+            }
+        }
+        else if(creation_date_select.options[2].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                 {
+                     if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-4).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-5).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-6).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                     {
+                         if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-4).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-5).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-6).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                         {
+                             if(Model.AllPersonalTasks[i].TaskStatus == "Not started")
+                             {
+                                 @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                             }
+                         }
+
+                     }
+                 }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-4).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-5).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-6).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-4).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-5).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-6).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                        {
+                            if(Model.AllPersonalTasks[i].TaskStatus == "In progress")
+                            {
+                                @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-4).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-5).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-6).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-4).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-5).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-6).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                        {
+                            if(Model.AllPersonalTasks[i].TaskStatus == "Put on hold")
+                            {
+                                @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-4).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-5).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-6).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-4).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-5).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-6).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                        {
+                            if(Model.AllPersonalTasks[i].TaskStatus == "Cancelled")
+                            {
+                                @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-4).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-5).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-6).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-4).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-5).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-6).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                        {
+                            if(Model.AllPersonalTasks[i].TaskStatus == "Completed")
+                            {
+                                @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-2).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-3).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-4).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-5).Month == Model.AllPersonalTasks[i].TaskStartDate.Month || DateTime.Now.AddMonths(-6).Month == Model.AllPersonalTasks[i].TaskStartDate.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-2).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-3).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-4).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-5).Year == Model.AllPersonalTasks[i].TaskStartDate.Year || DateTime.Now.AddMonths(-6).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                        {
+                             @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        else if(creation_date_select.options[3].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "Not started")
+                        {
+                          @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "In progress")
+                        {
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "Put on hold")
+                        {
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "Cancelled")
+                        {
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                    {
+                        if(Model.AllPersonalTasks[i].TaskStatus == "Completed")
+                        {
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                        }
+
+                    }
+                }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllPersonalTasks[i].TaskStartDate.Year)
+                    {
+
+                            @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                    }
+                }
+            }
+        }
+        else if(creation_date_select.options[4].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if(Model.AllPersonalTasks[i].TaskStatus == "Not started")
+                     {
+                        @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                     }
+
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if(Model.AllPersonalTasks[i].TaskStatus == "In progress")
+                     {
+                        @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                     }
+
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if(Model.AllPersonalTasks[i].TaskStatus == "Put on hold")
+                     {
+                        @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                     }
+
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                    if(Model.AllPersonalTasks[i].TaskStatus == "Cancelled")
+                     {
+                        @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                     }
+
+                }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+                   if(Model.AllPersonalTasks[i].TaskStatus == "Completed")
+                   {
+                       @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+                                                                   }
+
+               }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllPersonalTasks.Count;i++)
+                {
+
+                  @:createTask(('@Model.AllPersonalTasks[i].TaskName'),('@Model.AllPersonalTasks[i].TaskStatus'),('@Model.AllPersonalTasks[i].TaskStartDate'),('@Model.AllPersonalTasks[i].TaskEndDate'),(@Model.AllPersonalTasks[i].TaskID));
+
+                }
+            }
+        }
+
+    }
+    function meetingTasksCreation(){
+        if(creation_date_select.options[0].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i = 0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year))
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Not started")
+                        {
+                            @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i = 0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                     if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year))
+                     {
+                         if(Model.AllMeetingTasks[i].TaskStatus == "In progress")
+                         {
+                             @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                         }
+                     }
+                 }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i = 0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                     if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year))
+                     {
+                         if(Model.AllMeetingTasks[i].TaskStatus == "Put on hold")
+                         {
+                             @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                         }
+                     }
+                 }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i = 0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year))
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Cancelled")
+                        {
+                            @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+                    }
+                }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i = 0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year))
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Completed")
+                        {
+                            @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+                    }
+                }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i = 0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                     if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month && (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year))
+                     {
+
+                             @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                                                     }
+                 }
+            }
+        }
+        else if(creation_date_select.options[1].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Not started")
+                            {
+                                @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "In progress")
+                            {
+                                @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Put on hold")
+                            {
+                                @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                       {
+                           if(Model.AllMeetingTasks[i].TaskStatus == "Cancelled")
+                           {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                           }
+                       }
+
+                   }
+               }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Completed")
+                            {
+                                @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                   if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                   {
+                       if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                       {
+
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                       }
+
+                   }
+               }
+            }
+        }
+        else if(creation_date_select.options[2].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-4).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-5).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-6).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-4).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-5).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-6).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Not started")
+                            {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-4).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-5).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-6).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-4).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-5).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-6).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "In progress")
+                            {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-4).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-5).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-6).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-4).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-5).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-6).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Put on hold")
+                            {
+                                @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-4).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-5).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-6).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-4).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-5).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-6).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Cancelled")
+                            {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-4).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-5).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-6).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-4).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-5).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-6).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+                            if(Model.AllMeetingTasks[i].TaskStatus == "Completed")
+                            {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddMonths(-1).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-2).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-3).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-4).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-5).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month || DateTime.Now.AddMonths(-6).Month == Model.AllMeetingTasks[i].TaskStartDate.Value.Month)
+                    {
+                        if (DateTime.Now.AddMonths(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-2).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-3).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-4).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-5).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year || DateTime.Now.AddMonths(-6).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                        {
+
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        else if(creation_date_select.options[3].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Not started")
+                        {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "In progress")
+                        {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Put on hold")
+                        {
+                            @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Cancelled")
+                        {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+
+                    }
+                }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                    {
+                        if(Model.AllMeetingTasks[i].TaskStatus == "Completed")
+                        {
+                               @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                        }
+
+                    }
+                }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if (DateTime.Now.AddYears(-1).Year == Model.AllMeetingTasks[i].TaskStartDate.Value.Year)
+                    {
+                        @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                                    }
+                }
+            }
+        }
+        else if(creation_date_select.options[4].selected)
+        {
+            if(checkboxes[0].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if(Model.AllMeetingTasks[i].TaskStatus == "Not started")
+                    {
+                        @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                                    }
+
+                }
+            }
+            if(checkboxes[1].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                   if(Model.AllMeetingTasks[i].TaskStatus == "In progress")
+                   {
+                        @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                  }
+
+               }
+            }
+            if(checkboxes[2].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                    if(Model.AllMeetingTasks[i].TaskStatus == "Put on hold")
+                    {
+                        @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                    }
+
+                }
+            }
+            if(checkboxes[3].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                   if(Model.AllMeetingTasks[i].TaskStatus == "Cancelled")
+                   {
+                        @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                   }
+
+               }
+            }
+            if(checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                   if(Model.AllMeetingTasks[i].TaskStatus == "Completed")
+                   {
+                        @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+                                }
+
+               }
+            }
+            if(!checkboxes[0].checked && !checkboxes[1].checked&&!checkboxes[2].checked&&!checkboxes[3].checked&&!checkboxes[4].checked)
+            {
+                @for(var i=0;i<Model.AllMeetingTasks.Count;i++)
+                {
+                  @:createTask(('@Model.AllMeetingTasks[i].AssignedTask'),('@Model.AllMeetingTasks[i].TaskStatus'),('@Model.AllMeetingTasks[i].TaskStartDate'),('@Model.AllMeetingTasks[i].TaskEndDate'),(@Model.AllMeetingTasks[i].meetingID));
+
+                }
+            }
+        }
+
+    }
+</script>

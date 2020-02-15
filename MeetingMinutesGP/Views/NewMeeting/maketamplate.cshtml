@@ -1,0 +1,62 @@
+﻿@model IEnumerable<MeetingMinutesGP.Models.Topic>
+@{
+    ViewBag.Title = "maketamplate";
+}
+
+
+<style>
+    body {
+        width: 100%;
+        height: 2000px;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    .border {
+        position: fixed;
+        top: 0;
+        left: 0;
+        border: 12px solid #000;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .dd {
+        border: 3px solid #000;
+        width: 100%;
+        height: auto;
+        box-sizing: border-box;
+    }
+
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: gray;
+        color: white;
+        text-align: center;
+    }
+</style>
+<div class="border">
+    <h1 align="center" style="background-color:gray;margin-top:50px ">agenda number @ViewData["total"]</h1>
+    <a href="@Url.Action("exportpage","NewMeeting")">export pdf</a>
+    @foreach (var topics in Model)
+    { <div class="dd">
+        <h2>Name Topic </h2>
+        <label>@topics.TopicName</label>
+        <h2>
+            Description
+        </h2>
+        <label>@topics.TopicDescription</label>
+        <hr />
+    </div>
+    }
+    <div class="footer">
+        <p style="ruby-span"> Meeting menuites</p>
+    </div>
+</div>
